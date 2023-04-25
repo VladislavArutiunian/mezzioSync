@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Sync\Handler;
 
 use Laminas\Diactoros\Response\HtmlResponse;
+use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+use Mezzio\Router;
 
 class SumHandler implements RequestHandlerInterface
 {
@@ -17,31 +19,21 @@ class SumHandler implements RequestHandlerInterface
     {
         $getParams = $request->getQueryParams();
         $paramsSum = $this->getParamsSum($getParams);
-        $inputParams = implode(', ', array_values($getParams));
 
-        if (is_null($paramsSum)) {
-            $message = "Provided Get Params isn't type of integer";
-            $this->writeLog('error', $message, $inputParams, $paramsSum);
+        $inputParamsString = is_null($getParams) ? '' : implode(', ', array_values($getParams));
+        $message = "Sum Operation performed successfully";
 
-            return new HtmlResponse("<p>Error: input data is not type of integer</p>");
-        }
-        $message = "Success sum operation";
-        $result = $paramsSum;
-        $this->writeLog('info', $message, $inputParams, $result);
+        $this->writeLog('info', $message, $inputParamsString, $paramsSum);
 
         return new HtmlResponse("<p>Sum of params is $paramsSum</p>");
     }
 
-    public function getParamsSum(array $getParams): ?int
+    public function getParamsSum(?array $getParams): int
     {
-        $sum = 0;
-        foreach ($getParams as $param) {
-            if (!is_numeric($param)) {
-                return null;
-            }
-            $sum += $param;
+        if (is_null($getParams)) {
+            return 0;
         }
-        return $sum;
+        return array_sum(array_values($getParams));
     }
 
     public function writeLog(string $logType, string $message, string $inputParams, ?int $result)
@@ -55,9 +47,6 @@ class SumHandler implements RequestHandlerInterface
 
         $output = "Message: $message; input params: $inputParams; result: $result";
         switch ($logType) {
-            case "error":
-                $log->error($output);
-                break;
             case "info":
                 $log->info($output);
                 break;

@@ -47,18 +47,19 @@
         "laminas/laminas-component-installer": "^2.6",
         "laminas/laminas-config-aggregator": "^1.6",
         "laminas/laminas-diactoros": "^2.7",
+        "laminas/laminas-servicemanager": "^3.4",
         "laminas/laminas-stdlib": "^3.6",
         "mezzio/mezzio": "^3.7",
+        "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
-        "laminas/laminas-servicemanager": "^3.4",
-        "mezzio/mezzio-fastroute": "^3.0.3"
+        "monolog/monolog": "^2.9"
     },
     "require-dev": {
+        "filp/whoops": "^2.7.1",
         "laminas/laminas-development-mode": "^3.3.0",
         "mezzio/mezzio-tooling": "^2.1",
-        "phpunit/phpunit": "^9.5.11",
-        "roave/security-advisories": "dev-master",
-        "filp/whoops": "^2.7.1"
+        "phpunit/phpunit": "^9.6",
+        "roave/security-advisories": "dev-master"
     },
     "autoload": {
         "psr-4": {
@@ -68,7 +69,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "AppTest\\": "test/AppTest/"
+            "AppTest\\": "test/AppTest/",
+            "SyncTest\\": "test/SyncTest/"
         }
     },
     "scripts": {
