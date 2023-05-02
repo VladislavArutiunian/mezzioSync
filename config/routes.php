@@ -40,5 +40,6 @@ use Psr\Container\ContainerInterface;
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
     $app->get('/', App\Handler\HomePageHandler::class, 'home');
     $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
-    $app->get('/sum', Sync\Handler\SumHandler::class, 'sum');
+    $app->get('/sum', Sync\Handler\AuthHandler::class, 'sum');
+    $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
 };

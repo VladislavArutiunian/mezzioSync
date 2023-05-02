@@ -2,12 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Sync;
-
-use Sync\Handler\AuthHandler;
-use Sync\Handler\AuthHandlerFactory;
-use Sync\Handler\SumHandler;
-use Sync\Handler\SumHandlerFactory;
+namespace App;
 
 /**
  * The configuration provider for the App module
@@ -36,21 +31,25 @@ class ConfigProvider
     public function getDependencies(): array
     {
         return [
-            'invokables' => [],
-            'factories' => [
-                SumHandler::class => SumHandlerFactory::class,
-                AuthHandler::class => AuthHandlerFactory::class,
+            'invokables' => [
+                Handler\PingHandler::class => Handler\PingHandler::class,
+            ],
+            'factories'  => [
+                Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
             ],
         ];
     }
 
+    /**
+     * Returns the templates configuration
+     */
     public function getTemplates(): array
     {
         return [
             'paths' => [
-                'app'    => ['templates/app'],
-                'error'  => ['templates/error'],
-                'layout' => ['templates/layout'],
+                'app'    => [__DIR__ . '/../templates/app'],
+                'error'  => [__DIR__ . '/../templates/error'],
+                'layout' => [__DIR__ . '/../templates/layout'],
             ],
         ];
     }
