@@ -17,17 +17,20 @@ class AuthHandler implements RequestHandlerInterface
     private string $integrationId;
     private string $authCode;
 
+    private string $returnUrl;
+
     public function __construct(array $integration)
     {
         $this->secretKey = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
         $this->authCode = $integration['auth_code'];
+        $this->returnUrl = $integration['return_url'];
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $apiClient = new ApiService($this->integrationId, $this->secretKey, $this->authCode);
-        $apiClient->auth($request->getQueryParams());
-        return new JsonResponse([]);
+        $apiClient = new ApiService($this->integrationId, $this->secretKey, $this->returnUrl);
+        $accountName = $apiClient->auth($request->getQueryParams());
+        return new JsonResponse(["name" => $accountName]);
     }
 }
