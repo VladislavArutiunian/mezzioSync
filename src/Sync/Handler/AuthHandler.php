@@ -19,9 +19,9 @@ class AuthHandler implements RequestHandlerInterface
 
     public function __construct(array $integration)
     {
-        $this->secretKey     = $integration['secret_key'];
+        $this->secretKey = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
-        $this->authCode      = $integration['auth_code'];
+        $this->authCode = $integration['auth_code'];
     }
 
     public function handle(ServerRequestInterface $request): ResponseInterface
