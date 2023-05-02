@@ -19,6 +19,7 @@ class AuthHandler implements RequestHandlerInterface
 
     public function __construct(array $integration)
     {
+        // TODO: выравнивания "=" быть не должно
         $this->secretKey     = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
         $this->authCode      = $integration['auth_code'];

@@ -6,5 +6,5 @@
 /phpunit.xml
 /vendor/
 /log
-/composer.lock
+composer.lock
 /.phpunit.result.cache
