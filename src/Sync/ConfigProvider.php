@@ -6,6 +6,8 @@ namespace Sync;
 
 use Sync\Handler\AuthHandler;
 use Sync\Handler\AuthHandlerFactory;
+use Sync\Handler\ContactsHandler;
+use Sync\Handler\ContactsHandlerFactory;
 use Sync\Handler\SumHandler;
 use Sync\Handler\SumHandlerFactory;
 
@@ -40,6 +42,7 @@ class ConfigProvider
             'factories' => [
                 SumHandler::class => SumHandlerFactory::class,
                 AuthHandler::class => AuthHandlerFactory::class,
+                ContactsHandler::class => ContactsHandlerFactory::class,
             ],
         ];
     }
