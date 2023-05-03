@@ -169,7 +169,7 @@ class ApiService
      * @param int $serviceId Системный идентификатор аккаунта.
      * @return null | AccessToken
      */
-    public function readToken(int $serviceId): ?AccessToken
+    public function readToken(int $serviceId): ?AccessToken // TODO: PHPDocs
     {
         try {
             if (!file_exists(self::TOKENS_FILE)) {
