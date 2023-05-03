@@ -23,6 +23,8 @@ class ApiService
     /** @var AmoCRMApiClient AmoCRM клиент. */
     private AmoCRMApiClient $apiClient;
 
+    private bool $isTokenExists;
+
     /**
      * ApiService constructor.
      */
@@ -50,6 +52,8 @@ class ApiService
             $_SESSION['service_id'] = $queryParams['id'];
         }
 
+        $this->isTokenExists = $this->isTokenExists($_SESSION['service_id']);
+
         if (isset($queryParams['referer'])) {
             $this
                 ->apiClient
@@ -59,7 +63,15 @@ class ApiService
         }
 
         try {
-            if (!isset($queryParams['code'])) {
+            if ($this->isTokenExists) {
+                $accessToken = $this->readToken($_SESSION['service_id']);
+                return $this
+                    ->apiClient
+                    ->getOAuthClient()
+                    ->setBaseDomain($accessToken->jsonSerialize()['base_domain'])
+                    ->getResourceOwner($accessToken)
+                    ->getName();
+            } elseif (!isset($queryParams['code'])) {
                 $state = bin2hex(random_bytes(16));
                 $_SESSION['oauth2state'] = $state;
                 if (isset($queryParams['button'])) {
@@ -148,7 +160,7 @@ class ApiService
      * @param int $serviceId Системный идентификатор аккаунта.
      * @return AccessToken
      */
-    public function readToken(int $serviceId): AccessToken
+    public function readToken(int $serviceId): ?AccessToken
     {
         try {
             if (!file_exists(self::TOKENS_FILE)) {
@@ -162,7 +174,16 @@ class ApiService
 
             return new AccessToken($accesses[$serviceId]);
         } catch (Throwable $e) {
-            exit($e->getMessage());
+            //exit($e->getMessage());
+            return null;
         }
+    }
+
+    public function isTokenExists(int $service_id): bool
+    {
+        if (is_null($this->readToken($service_id))) {
+            return false;
+        }
+        return true;
     }
 }
