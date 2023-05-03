@@ -3,6 +3,9 @@
 namespace Sync\Api;
 
 use AmoCRM\Client\AmoCRMApiClient;
+use AmoCRM\Exceptions\AmoCRMApiException;
+use AmoCRM\Exceptions\AmoCRMMissedTokenException;
+use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use Exception;
 use League\OAuth2\Client\Token\AccessToken;
 use Throwable;
@@ -30,6 +33,8 @@ class ApiService
      */
     private bool $isTokenExists;
 
+    private AccessToken $accessToken;
+
     /**
      * ApiService конструктор.
      *
@@ -50,9 +55,9 @@ class ApiService
      * Получение токена доступа для аккаунта.
      *
      * @param array $queryParams Входные GET параметры. Имя параметра - id
-     * @return string Имя авторизованного аккаунта.
+     * @return ApiService Имя авторизованного аккаунта.
      */
-    public function auth(array $queryParams): string
+    public function auth(array $queryParams): ApiService
     {
         session_start();
 
@@ -73,13 +78,9 @@ class ApiService
 
         try {
             if ($this->isTokenExists) {
-                $accessToken = $this->readToken($_SESSION['service_id']);
-                return $this
-                    ->apiClient
-                    ->getOAuthClient()
-                    ->setBaseDomain($accessToken->jsonSerialize()['base_domain'])
-                    ->getResourceOwner($accessToken)
-                    ->getName();
+                $this->accessToken = $this->readToken($_SESSION['service_id']);
+
+                return $this;
             } elseif (!isset($queryParams['code'])) {
                 $state = bin2hex(random_bytes(16));
                 $_SESSION['oauth2state'] = $state;
@@ -121,18 +122,18 @@ class ApiService
         }
 
         try {
-            $accessToken = $this
+            $this->accessToken = $this
                 ->apiClient
                 ->getOAuthClient()
                 ->setBaseDomain($queryParams['referer'])
                 ->getAccessTokenByCode($queryParams['code']);
 
-            if (!$accessToken->hasExpired()) {
+            if (!$this->accessToken->hasExpired()) {
                 $this->saveToken($_SESSION['service_id'], [
                     'base_domain' => $this->apiClient->getAccountBaseDomain(),
-                    'access_token' => $accessToken->getToken(),
-                    'refresh_token' => $accessToken->getRefreshToken(),
-                    'expires' => $accessToken->getExpires(),
+                    'access_token' => $this->accessToken->getToken(),
+                    'refresh_token' => $this->accessToken->getRefreshToken(),
+                    'expires' => $this->accessToken->getExpires(),
                 ]);
             }
         } catch (Throwable $e) {
@@ -140,11 +141,7 @@ class ApiService
         }
 
         session_abort();
-        return $this
-            ->apiClient
-            ->getOAuthClient()
-            ->getResourceOwner($accessToken)
-            ->getName();
+        return $this;
     }
 
     /**
@@ -200,5 +197,43 @@ class ApiService
             return false;
         }
         return true;
+    }
+
+    /**
+     * Получить имя аккаунта
+     *
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this
+            ->apiClient
+            ->getOAuthClient()
+            ->setBaseDomain($this->accessToken->jsonSerialize()['base_domain'])
+            ->getResourceOwner($this->accessToken)
+            ->getName();
+    }
+
+    /**
+     * Получить список контактов
+     *
+     * @return array
+     * @throws AmoCRMApiException
+     * @throws AmoCRMMissedTokenException
+     * @throws AmoCRMoAuthApiException
+     */
+    public function getContacts(): array
+    {
+        try {
+            return $this
+                ->apiClient
+                ->setAccountBaseDomain($this->accessToken->jsonSerialize()['base_domain'])
+                ->setAccessToken($this->accessToken)
+                ->contacts()
+                ->get()
+                ->toArray();
+        } catch (AmoCRMApiException | AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
+            exit($e->getMessage());
+        }
     }
 }
