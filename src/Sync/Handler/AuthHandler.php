@@ -19,7 +19,7 @@ class AuthHandler implements RequestHandlerInterface
 
     private string $returnUrl;
 
-    public function __construct(array $integration)
+    public function __construct(array $integration) // TODO: PHPDocs
     {
         $this->secretKey = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
