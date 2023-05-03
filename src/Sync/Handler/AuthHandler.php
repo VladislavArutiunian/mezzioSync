@@ -19,6 +19,11 @@ class AuthHandler implements RequestHandlerInterface
 
     private string $returnUrl;
 
+    /**
+     * ApiService конструктор.
+     *
+     * @param array $integration
+     */
     public function __construct(array $integration)
     {
         $this->secretKey = $integration['secret_key'];
