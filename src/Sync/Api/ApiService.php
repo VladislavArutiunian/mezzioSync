@@ -23,12 +23,21 @@ class ApiService
     /** @var AmoCRMApiClient AmoCRM клиент. */
     private AmoCRMApiClient $apiClient;
 
-    private bool $isTokenExists; // TODO: PHPDocs
+    /**
+     * Существует ли токен
+     *
+     * @var bool
+     */
+    private bool $isTokenExists;
 
     /**
-     * ApiService constructor.
+     * ApiService конструктор.
+     *
+     * @param string $integrationId
+     * @param string $integrationSecretKey
+     * @param string $integrationRedirectUri
      */
-    public function __construct($integrationId, $integrationSecretKey, $integrationRedirectUri) // TODO: PHPDocs
+    public function __construct(string $integrationId, string $integrationSecretKey, string $integrationRedirectUri)
     {
         $this->apiClient = new AmoCRMApiClient(
             $integrationId,
@@ -158,7 +167,7 @@ class ApiService
      * Получение токена из файла.
      *
      * @param int $serviceId Системный идентификатор аккаунта.
-     * @return AccessToken
+     * @return null | AccessToken
      */
     public function readToken(int $serviceId): ?AccessToken // TODO: PHPDocs
     {
@@ -179,7 +188,13 @@ class ApiService
         }
     }
 
-    public function isTokenExists(int $service_id): bool // TODO: PHPDocs
+    /**
+     * Проверка на существование токена
+     *
+     * @param int $service_id
+     * @return bool
+     */
+    public function isTokenExists(int $service_id): bool
     {
         if (is_null($this->readToken($service_id))) {
             return false;
