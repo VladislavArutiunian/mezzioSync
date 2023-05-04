@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
+use AmoCRM\Exceptions\AmoCRMApiException;
+use AmoCRM\Exceptions\AmoCRMMissedTokenException;
+use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,9 +34,9 @@ class ContactsHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $apiClient = new ApiService($this->integrationId, $this->secretKey, $this->returnUrl);
-        $auth = $apiClient->auth($request->getQueryParams());
 
-        $contacts = $auth->getContacts();
+        $contacts = $apiClient->getContacts($request->getQueryParams());
+
         $contactsFiltered = array_map(function ($contact) {
             $name = $contact['name'];
             $emailsArr = $contact['custom_fields_values'][1]['values'] ?? [];
