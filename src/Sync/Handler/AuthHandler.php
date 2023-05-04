@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
+use http\Env\Response;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
@@ -34,10 +35,12 @@ class AuthHandler implements RequestHandlerInterface
 
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        $queryParams = $request->getQueryParams();
         $apiClient = new ApiService($this->integrationId, $this->secretKey, $this->returnUrl);
-//        $accountName = $apiClient->auth($request->getQueryParams());
-        $auth = $apiClient->auth($request->getQueryParams());
-        $accountName = $auth->getName();
+        $apiClient->auth($queryParams);
+
+        $accountName = $apiClient->getName($queryParams);
+
         return new JsonResponse(["name" => $accountName]);
     }
 }
