@@ -6,10 +6,15 @@ namespace Sync;
 
 use Sync\Handler\AuthHandler;
 use Sync\Handler\AuthHandlerFactory;
+use Sync\Handler\ContactHandler;
+use Sync\Handler\ContactHandlerFactory;
 use Sync\Handler\ContactsHandler;
 use Sync\Handler\ContactsHandlerFactory;
+use Sync\Handler\MainSyncHandler;
+use Sync\Handler\MainSyncHandlerFactory;
 use Sync\Handler\SumHandler;
-use Sync\Handler\SumHandlerFactory;
+use Sync\Handler\WebhookHandlerFactory;
+use Sync\Handler\WebhookHandler;
 
 /**
  * The configuration provider for the App module
@@ -40,9 +45,12 @@ class ConfigProvider
         return [
             'invokables' => [],
             'factories' => [
-                SumHandler::class => SumHandlerFactory::class,
-                AuthHandler::class => AuthHandlerFactory::class,
-                ContactsHandler::class => ContactsHandlerFactory::class,
+//                SumHandler::class => SumHandlerFactory::class,
+//                AuthHandler::class => AuthHandlerFactory::class,
+//                ContactsHandler::class => ContactsHandlerFactory::class,
+                WebhookHandler::class => WebhookHandlerFactory::class,
+                MainSyncHandler::class => MainSyncHandlerFactory::class,
+                ContactHandler::class => ContactHandlerFactory::class,
             ],
         ];
     }

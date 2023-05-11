@@ -43,6 +43,7 @@
     },
     "require": {
         "php": "^7.4 || ~8.0.0 || ~8.1.0",
+        "ext-json": "*",
         "amocrm/amocrm-api-library": "^0.13.0",
         "composer/package-versions-deprecated": "^1.10.99",
         "laminas/laminas-component-installer": "^2.6",
@@ -53,7 +54,7 @@
         "mezzio/mezzio": "^3.7",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
-      "ext-json": "*"
+        "unisender/api-wrapper": "^1.6"
     },
     "require-dev": {
         "laminas/laminas-development-mode": "^3.3.0",
