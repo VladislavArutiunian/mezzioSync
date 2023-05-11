@@ -38,17 +38,17 @@ class SumHandler implements RequestHandlerInterface
 
     public function writeLog(string $logType, string $message, string $inputParams, ?int $result)
     {
-        $log = new Logger('sums-logger');
+//        $log = new Logger('sums-logger');
         $currentDate = date('Y-m-d');
-        $stream = new StreamHandler(
-            dirname(__DIR__, 3) . "/log/$currentDate/request.log",
-            Logger::DEBUG);
-        $log->pushHandler($stream);
+//        $stream = new StreamHandler(
+//            dirname(__DIR__, 3) . "/log/$currentDate/request.log",
+//            Logger::DEBUG);
+//        $log->pushHandler($stream);
 
         $output = "Message: $message; input params: $inputParams; result: $result";
         switch ($logType) {
             case "info":
-                $log->info($output);
+//                $log->info($output);
                 break;
             default:
                 throw new \Exception("Unknown type of log Type");
