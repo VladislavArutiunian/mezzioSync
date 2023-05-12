@@ -11,30 +11,46 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Unisender\ApiWrapper\UnisenderApi;
 
+/**
+ * Class Contact
+ *
+ * Выбирает контакт из Unisendler
+ */
 class ContactHandler implements RequestHandlerInterface
 {
-    private array $unisenderApiKey;
+    /**
+     * Unisender api_key from project configs
+     *
+     * @var string
+     */
+    private string $unisenderApiKey;
 
-    public function __construct(array $unisenderApiKey)
+    public function __construct(string $unisenderApiKey)
     {
         $this->unisenderApiKey = $unisenderApiKey;
     }
 
+    /**
+     * Contact Handler
+     * Требуется переданномый GET параметр email и сохраненный в конфигах api ключ
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
             if (!isset($request->getQueryParams()['email'])) {
                 throw new \Exception('provide the contact email');
             }
-            if (!isset($this->unisenderApiKey['api_key'])) {
-                throw new \Exception('add unisender api key to configs.unisendler');
+            if (empty($this->unisenderApiKey)) {
+                throw new \Exception('add unisender api key to unisendler configs');
             }
-            $email = $request->getQueryParams()['email'];
-            $apiKey = $this->unisenderApiKey['api_key'];
             $params = [
-                'email' => $email,
+                'email' => $request->getQueryParams()['email'],
             ];
-            $unisenderApi = new UnisenderApi($apiKey);
+
+            $unisenderApi = new UnisenderApi($this->unisenderApiKey);
             $contactInfo = $unisenderApi->getContact($params);
         } catch (\Exception $e) {
             exit($e->getMessage());
@@ -43,4 +59,3 @@ class ContactHandler implements RequestHandlerInterface
         return new HtmlResponse(print_r($contactInfo, true));
     }
 }
-//'kicis43537@meidecn.com'
