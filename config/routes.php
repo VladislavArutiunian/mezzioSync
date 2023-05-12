@@ -40,11 +40,12 @@ use Psr\Container\ContainerInterface;
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
 //    $app->get('/', App\Handler\HomePageHandler::class, 'home');
 //    $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
-//    $app->get('/sum', Sync\Handler\AuthHandler::class, 'sum');
+//    $app->get('/sum', SyncTrait\Handler\AuthHandler::class, 'sum');
     $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
-//    $app->get('/contacts', Sync\Handler\ContactsHandler::class, 'contacts');
-    $app->get('/', Sync\Handler\MainSyncHandler::class, 'main-sync');
+//    $app->get('/contacts', SyncTrait\Handler\ContactsHandler::class, 'contacts');
+    //$app->get('/', SyncTrait\Handler\MainSyncHandler::class, 'main-sync');
     $app->get('/webhook', Sync\Handler\WebhookHandler::class, 'webhook-get');
     $app->post('/webhook', Sync\Handler\WebhookHandler::class, 'webhook');
     $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
+    $app->get('/send', Sync\Handler\SendHandler::class, 'send');
 };

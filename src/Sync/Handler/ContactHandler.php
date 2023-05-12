@@ -14,7 +14,7 @@ use Unisender\ApiWrapper\UnisenderApi;
 /**
  * Class Contact
  *
- * Выбирает контакт из Unisendler
+ * Selects contact from Unisendler
  */
 class ContactHandler implements RequestHandlerInterface
 {
@@ -32,7 +32,7 @@ class ContactHandler implements RequestHandlerInterface
 
     /**
      * Contact Handler
-     * Требуется переданномый GET параметр email и сохраненный в конфигах api ключ
+     * Requires email GET parameter and api key from config
      *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
