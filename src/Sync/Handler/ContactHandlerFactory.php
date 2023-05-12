@@ -16,7 +16,7 @@ use function get_class;
 class ContactHandlerFactory
 {
     /**
-     * Contact factory. Passes unisender api_key to Contact class
+     * Contact factory. Passes unisender api key to Contact class
      *
      * @param ContainerInterface $container
      * @return RequestHandlerInterface
