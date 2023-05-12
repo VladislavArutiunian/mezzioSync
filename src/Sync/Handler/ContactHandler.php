@@ -56,6 +56,6 @@ class ContactHandler implements RequestHandlerInterface
             exit($e->getMessage());
         }
         http_response_code(200);
-        return new HtmlResponse(print_r($contactInfo, true));
+        return new JsonResponse($contactInfo);
     }
 }
