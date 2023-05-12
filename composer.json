@@ -54,7 +54,8 @@
         "mezzio/mezzio": "^3.7",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
-        "unisender/api-wrapper": "^1.6"
+        "unisender/api-wrapper": "^1.6",
+        "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
         "laminas/laminas-development-mode": "^3.3.0",

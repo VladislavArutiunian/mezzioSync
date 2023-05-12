@@ -10,8 +10,8 @@ use Sync\Handler\ContactHandler;
 use Sync\Handler\ContactHandlerFactory;
 use Sync\Handler\ContactsHandler;
 use Sync\Handler\ContactsHandlerFactory;
-use Sync\Handler\MainSyncHandler;
-use Sync\Handler\MainSyncHandlerFactory;
+use Sync\Handler\SendHandler;
+use Sync\Handler\SendHandlerFactory;
 use Sync\Handler\SumHandler;
 use Sync\Handler\WebhookHandlerFactory;
 use Sync\Handler\WebhookHandler;
@@ -46,11 +46,12 @@ class ConfigProvider
             'invokables' => [],
             'factories' => [
 //                SumHandler::class => SumHandlerFactory::class,
-//                AuthHandler::class => AuthHandlerFactory::class,
+                AuthHandler::class => AuthHandlerFactory::class,
 //                ContactsHandler::class => ContactsHandlerFactory::class,
                 WebhookHandler::class => WebhookHandlerFactory::class,
-                MainSyncHandler::class => MainSyncHandlerFactory::class,
+                //MainSyncHandler::class => MainSyncHandlerFactory::class,
                 ContactHandler::class => ContactHandlerFactory::class,
+                SendHandler::class => SendHandlerFactory::class,
             ],
         ];
     }

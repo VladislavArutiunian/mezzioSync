@@ -4,35 +4,28 @@ namespace Sync\Api;
 
 use AmoCRM\Client\AmoCRMApiClient;
 use AmoCRM\Exceptions\AmoCRMApiException;
+use AmoCRM\Exceptions\AmoCRMApiNoContentException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
 use AmoCRM\Exceptions\AmoCRMoAuthApiException;
+use AmoCRM\Filters\ContactsFilter;
 use AmoCRM\OAuth2\Client\Provider\AmoCRMException;
 use Exception;
 use League\OAuth2\Client\Token\AccessToken;
+use Sync\Common\Token;
 use Throwable;
 
 /**
  * Class ApiService.
  *
- * @package Sync\Api
+ * @package SyncTrait\Api
  */
 class ApiService
 {
     /** @var string Базовый домен авторизации. */
     private const TARGET_DOMAIN = 'kommo.com';
 
-    /** @var string Файл хранения токенов. */
-    private const TOKENS_FILE = './tokens.json';
-
     /** @var AmoCRMApiClient AmoCRM клиент. */
     private AmoCRMApiClient $apiClient;
-
-    /**
-     * Существует ли токен
-     *
-     * @var bool
-     */
-    private bool $isTokenExists;
 
     /**
      * @var AccessToken
@@ -70,7 +63,7 @@ class ApiService
             $_SESSION['service_id'] = $queryParams['id'];
         }
 
-        $this->isTokenExists = $this->isTokenExists($_SESSION['service_id']);
+        $this->isTokenExists = Token::isTokenExists($_SESSION['service_id']);
 
         if (isset($queryParams['referer'])) {
             $this
@@ -82,7 +75,7 @@ class ApiService
 
         try {
             if ($this->isTokenExists) {
-                $this->accessToken = $this->readToken($_SESSION['service_id']);
+                $this->accessToken = Token::readToken($_SESSION['service_id']);
 
                 return $this;
             } elseif (!isset($queryParams['code'])) {
@@ -133,7 +126,7 @@ class ApiService
                 ->getAccessTokenByCode($queryParams['code']);
 
             if (!$this->accessToken->hasExpired()) {
-                $this->saveToken($_SESSION['service_id'], [
+                Token::saveToken($_SESSION['service_id'], [
                     'base_domain' => $this->apiClient->getAccountBaseDomain(),
                     'access_token' => $this->accessToken->getToken(),
                     'refresh_token' => $this->accessToken->getRefreshToken(),
@@ -149,74 +142,6 @@ class ApiService
     }
 
     /**
-     * Сохранение токена авторизации.
-     *
-     * @param int $serviceId Системный идентификатор аккаунта.
-     * @param array $token Токен доступа Api.
-     * @return void
-     */
-    private function saveToken(int $serviceId, array $token): void
-    {
-        $tokens = file_exists(self::TOKENS_FILE)
-            ? json_decode(file_get_contents(self::TOKENS_FILE), true)
-            : [];
-        $tokens[$serviceId] = $token;
-        file_put_contents(self::TOKENS_FILE, json_encode($tokens, JSON_PRETTY_PRINT));
-    }
-
-    public function deleteToken(int $serviceId): void
-    {
-        $tokens = file_exists(self::TOKENS_FILE)
-            ? json_decode(file_get_contents(self::TOKENS_FILE), true)
-            : [];
-        unset($tokens[$serviceId]);
-        file_put_contents(self::TOKENS_FILE, json_encode($tokens, JSON_PRETTY_PRINT));
-    }
-
-    /**
-     * Получение токена из файла.
-     *
-     * @param int $serviceId Системный идентификатор аккаунта.
-     * @return null | AccessToken
-     */
-    public function readToken(int $serviceId): AccessToken // TODO: PHPDocs
-    {
-        try {
-            if (!file_exists(self::TOKENS_FILE)) {
-                throw new Exception('Tokens file not found.');
-            }
-
-            $accesses = json_decode(file_get_contents(self::TOKENS_FILE), true);
-            if (empty($accesses[$serviceId])) {
-                throw new Exception("Unknown account name \"$serviceId\".");
-            }
-
-            return new AccessToken($accesses[$serviceId]);
-        } catch (Throwable $e) {
-            exit($e->getMessage());
-        }
-    }
-
-    /**
-     * Проверка на существование токена
-     *
-     * @param int $service_id
-     * @return bool
-     */
-    public function isTokenExists(int $service_id): bool
-    {
-        if (!file_exists(self::TOKENS_FILE)) {
-            return false;
-        }
-        $accesses = json_decode(file_get_contents(self::TOKENS_FILE), true);
-
-        if (empty($accesses[$service_id])) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * Получить имя аккаунта
      *
      * @param array $queryParams
@@ -228,7 +153,7 @@ class ApiService
             if (!isset($queryParams['id'])) {
                 throw new Exception('provide an account id');
             }
-            $this->accessToken = $this->readToken($_SESSION['service_id']);
+            $this->accessToken = Token::readToken($_SESSION['service_id']);
             return $this
                 ->apiClient
                 ->getOAuthClient()
@@ -236,7 +161,7 @@ class ApiService
                 ->getResourceOwner($this->accessToken)
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
-            $this->deleteToken($_SESSION['service_id']);
+            Token::deleteToken($_SESSION['service_id']);
             header('Location: ' . 'https://mezziostudy.loca.lt/auth?id=31197031');
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
@@ -256,22 +181,37 @@ class ApiService
             if (!isset($queryParams['id'])) {
                 throw new Exception('provide an account id');
             }
+            $pageNumber = $queryParams['page'] ?? 1;
             $id = $queryParams['id'];
 
-            if (!$this->isTokenExists($id)) {
+            if (!Token::isTokenExists($id)) {
                 header('Location: ' . "/auth?id=$id");
             }
-            $this->accessToken = $this->readToken($id);
+            $this->accessToken = Token::readToken($id);
 
-            return $this
-                ->apiClient
-                ->setAccountBaseDomain($this->accessToken->jsonSerialize()['base_domain'])
-                ->setAccessToken($this->accessToken)
-                ->contacts()
-                ->get()
-                ->toArray();
+            $filter = new ContactsFilter();
+            $filter->setLimit(250);
+            $flaq = true;
+            $result = [];
+            while ($flaq) {
+                try {
+                    $filter->setPage($pageNumber);
+                    $result[] = $this
+                        ->apiClient
+                        ->setAccountBaseDomain($this->accessToken->jsonSerialize()['base_domain'])
+                        ->setAccessToken($this->accessToken)
+                        ->contacts()
+                        ->get($filter)
+                        ->toArray();
+                    $pageNumber += 1;
+                } catch (AmoCRMApiNoContentException $e) {
+                    $flaq = false;
+                }
+            }
+
+            return $result[0];
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
-            $this->deleteToken($id);
+            Token::deleteToken($id);
             header('Location: ' . "/auth?id=$id");
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
