@@ -134,7 +134,7 @@ class SendHandler implements RequestHandlerInterface
         $fieldNames = [
             "field_names[0]" => 'email',
             "field_names[1]" => 'Name',
-            "field_names[2]" => 'email_list_ids',
+            //"field_names[2]" => 'email_list_ids',
         ];
         $fieldData = [];
         $contactRow = 0;
@@ -142,7 +142,7 @@ class SendHandler implements RequestHandlerInterface
             foreach ($contact['emails'] as $email) {
                 $fieldData["data[$contactRow][0]"] = $email;
                 $fieldData["data[$contactRow][1]"] = $contact['name'];
-                $fieldData["data[$contactRow][2]"] = $this->listId;
+                //$fieldData["data[$contactRow][2]"] = $this->listId;
                 $contactRow += 1;
             }
         }
