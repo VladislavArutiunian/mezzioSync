@@ -41,10 +41,10 @@ class ContactHandler implements RequestHandlerInterface
     {
         try {
             if (!isset($request->getQueryParams()['email'])) {
-                throw new \Exception('provide the contact email');
+                throw new \Exception('Provide the contact email');
             }
             if (empty($this->unisenderApiKey)) {
-                throw new \Exception('add unisender api key to unisendler configs');
+                throw new \Exception('Add the unisender api key to configs');
             }
             $params = [
                 'email' => $request->getQueryParams()['email'],
