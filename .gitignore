@@ -5,5 +5,5 @@
 /coveralls-upload.json
 /phpunit.xml
 /vendor/
-/.idea
 tokens.json
+/src/Sync/Handler/test.txt

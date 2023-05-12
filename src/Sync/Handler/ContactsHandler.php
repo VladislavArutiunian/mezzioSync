@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use AmoCRM\Exceptions\AmoCRMApiException;
-use AmoCRM\Exceptions\AmoCRMMissedTokenException;
-use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
