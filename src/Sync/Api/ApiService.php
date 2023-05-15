@@ -63,7 +63,7 @@ class ApiService
             $_SESSION['service_id'] = $queryParams['id'];
         }
 
-        $this->isTokenExists = Token::isTokenExists($_SESSION['service_id']); // TODO: использование несуществующего свойства. Оно вообще нужно?
+        $isTokenExists = Token::isTokenExists($_SESSION['service_id']);
 
         if (isset($queryParams['referer'])) {
             $this
@@ -74,7 +74,7 @@ class ApiService
         }
 
         try {
-            if ($this->isTokenExists) {
+            if ($isTokenExists) {
                 $this->accessToken = Token::readToken($_SESSION['service_id']);
 
                 return $this;
@@ -150,7 +150,7 @@ class ApiService
     public function getName(array $queryParams): string
     {
         try {
-            if (!isset($queryParams['id'])) {
+            if (!isset($queryParams['id']) && !isset($_SESSION['service_id'])) {
                 throw new Exception('provide an account id');
             }
             $this->accessToken = Token::readToken($_SESSION['service_id']);
@@ -162,7 +162,7 @@ class ApiService
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
             Token::deleteToken($_SESSION['service_id']);
-            header('Location: ' . 'https://mezziostudy.loca.lt/auth?id=31197031'); // TODO: хардкод идентификатора
+            header('Location: ' . '/auth?id=' . $_SESSION['service_id']);
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
@@ -206,14 +206,13 @@ class ApiService
                     $pageNumber += 1;
                 } catch (AmoCRMApiNoContentException $e) {
                     $flaq = false;
+                } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
+                    Token::deleteToken($id);
+                    header('Location: ' . "/auth?id=$id");
+                    exit($e->getMessage());
                 }
             }
-
             return $result[0];
-        } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
-            Token::deleteToken($id); // TODO: если блок catch работает, переменная $id не будет существовать и не будет доступна
-            header('Location: ' . "/auth?id=$id");
-            exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
         }
