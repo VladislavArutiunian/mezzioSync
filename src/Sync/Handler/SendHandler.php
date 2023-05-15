@@ -170,11 +170,13 @@ class SendHandler implements RequestHandlerInterface
     /**
      * Prepares data for request to unisender api
      *
+     * @param string $accountId
      * @return array
      */
-    public function prepareForUnisender(string $listId): array
+    public function prepareForUnisender(string $accountId): array
     {
-        $listIds = $this->getListId($listId);
+        $listName = $accountId;
+        $listIds = $this->getListIdByName($listName);
         $fieldNames = [
             "field_names[0]" => 'email',
             "field_names[1]" => 'Name',
@@ -193,31 +195,31 @@ class SendHandler implements RequestHandlerInterface
         return array_merge($fieldNames, $fieldData);
     }
 
-    public function isListExists(string $listId): bool
+    public function isListExists(string $listName): bool
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
-        $isExists = strpos($unisenderApi->getLists(), $listId);
+        $isExists = strpos($unisenderApi->getLists(), $listName);
         return is_int($isExists);
     }
 
     /**
      * Checks if list is exist unless creates it
      *
-     * @param string $accountId
+     * @param string $listName
      * @return string
      */
-    public function getListId(string $accountId): string
+    public function getListIdByName(string $listName): string
     {
         try {
-            if (!$this->isListExists($accountId)) {
-                $this->createList($accountId);
+            if (!$this->isListExists($listName)) {
+                $this->createList($listName);
             }
 
             $unisenderApi = new UnisenderApi($this->apiKey);
             $unisenderLists = json_decode($unisenderApi->getLists(), true);
 
             foreach ($unisenderLists['result'] as $list) {
-                if ($list['title'] === $accountId) {
+                if ($list['title'] === $listName) {
                     return (string) $list['id'];
                 }
             }
@@ -230,13 +232,13 @@ class SendHandler implements RequestHandlerInterface
     /**
      * Creates contacts list in unisendler
      *
-     * @param string $accountId
-     * @return string
+     * @param string $listName
+     * @return void
      */
-    public function createList(string $accountId): void
+    public function createList(string $listName): void
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
-        $params = ['title' => $accountId];
+        $params = ['title' => $listName];
         $unisenderApi->createList($params);
     }
 }
