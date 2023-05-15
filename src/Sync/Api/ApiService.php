@@ -63,7 +63,7 @@ class ApiService
             $_SESSION['service_id'] = $queryParams['id'];
         }
 
-        $this->isTokenExists = Token::isTokenExists($_SESSION['service_id']);
+        $this->isTokenExists = Token::isTokenExists($_SESSION['service_id']); // TODO: использование несуществующего свойства. Оно вообще нужно?
 
         if (isset($queryParams['referer'])) {
             $this
@@ -162,7 +162,7 @@ class ApiService
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
             Token::deleteToken($_SESSION['service_id']);
-            header('Location: ' . 'https://mezziostudy.loca.lt/auth?id=31197031');
+            header('Location: ' . 'https://mezziostudy.loca.lt/auth?id=31197031'); // TODO: хардкод идентификатора
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
@@ -211,7 +211,7 @@ class ApiService
 
             return $result[0];
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
-            Token::deleteToken($id);
+            Token::deleteToken($id); // TODO: если блок catch работает, переменная $id не будет существовать и не будет доступна
             header('Location: ' . "/auth?id=$id");
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {

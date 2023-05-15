@@ -57,6 +57,13 @@ class SendHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
+        /**
+         * TODO
+         * В хенделе не должно быть никакой основно бизнес логики, как здесь - это нужно
+         * вынести во внешние классы (ООП). Не используется пагинация для унисендера,
+         * поэтому, если у тебя будет 25000 контактов, будет отправлена только часть.
+         */
+        
         try {
             $accountId = $request->getQueryParams()['id'];
             if (!isset($accountId)) {
