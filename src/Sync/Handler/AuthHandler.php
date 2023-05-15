@@ -14,11 +14,17 @@ use Sync\Api\ApiService;
 
 class AuthHandler implements RequestHandlerInterface
 {
-    private string $secretKey; // TODO: PHPDocs
-    private string $integrationId; // TODO: PHPDocs
-    private string $authCode; // TODO: не используется
+    /**
+     * Secret key from integration
+     * @var string|mixed
+     */
+    private string $secretKey;
 
-    private string $returnUrl; // TODO: PHPDocs
+    /* @var string|mixed */
+    private string $integrationId;
+
+    /* @var string|mixed */
+    private string $returnUrl;
 
     /**
      * ApiService конструктор.
@@ -29,7 +35,6 @@ class AuthHandler implements RequestHandlerInterface
     {
         $this->secretKey = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
-        $this->authCode = $integration['auth_code'];
         $this->returnUrl = $integration['return_url'];
     }
 
