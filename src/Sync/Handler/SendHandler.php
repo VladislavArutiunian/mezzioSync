@@ -34,12 +34,6 @@ class SendHandler implements RequestHandlerInterface
     private string $secretKey;
 
     /**
-     * Contact list id from unisender
-     * @var null|string
-     */
-    private ?string $listId;
-
-    /**
      * Contacts from kommo
      * @var array
      */
@@ -50,14 +44,22 @@ class SendHandler implements RequestHandlerInterface
         $this->secretKey = $integration['secret_key'];
         $this->integrationId = $integration['integration_id'];
         $this->returnUrl = $integration['return_url'];
-        $this->listId = $unisender['list_id'] ?? null;
         $this->apiKey = $unisender['api_key'];
     }
 
+    /**
+     * Get contacts from commo,
+     * Filter and prepare for unisender,
+     * Import contacts to unisender
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
-            if (!isset($request->getQueryParams()['id'])) {
+            $accountId = $request->getQueryParams()['id'];
+            if (!isset($accountId)) {
                 throw new Exception('Provide an id in GET parameters');
             }
         } catch (Exception $e) {
@@ -72,9 +74,10 @@ class SendHandler implements RequestHandlerInterface
             ))->getContacts($request->getQueryParams());
 
         $params = $this
+            ->filterFields()
             ->filterContacts()
             ->formatForUnisender()
-            ->prepareForUnisender();
+            ->prepareForUnisender($accountId);
 
         $unisenderApi = new UnisenderApi($this->apiKey);
 
@@ -90,9 +93,48 @@ class SendHandler implements RequestHandlerInterface
     {
         $this->contacts = array_filter(
             $this->contacts,
-            fn ($item) => $item['name'] && $item['custom_fields_values'][0]['values'][0]['value']
+            fn ($contact) => $contact['name'] && $this->hasAtLeastOneWorkingEmail($contact)
         );
         return $this;
+    }
+
+    /**
+     * Filter only email fields
+     *
+     * @return $this
+     */
+    public function filterFields(): SendHandler
+    {
+        foreach ($this->contacts as &$contact) {
+            $fields = $contact['custom_fields_values'] ?? [];
+            $filteredFields = array_filter($fields, fn ($field) => $field['field_code'] === 'EMAIL');
+            $contact['custom_fields_values'] = array_values($filteredFields);
+        }
+        unset($contact);
+
+        return $this;
+    }
+
+    /**
+     * Checks if contact have at least 1 working email
+     *
+     * @param array $contact
+     * @return bool
+     */
+    public function hasAtLeastOneWorkingEmail(array $contact): bool
+    {
+        $hasWorkingEmail = false;
+        $emails = $contact['custom_fields_values'][0]['values'];
+        if (!$emails) {
+            return false;
+        }
+        foreach ($emails as $email) {
+            $type = $email["enum_code"];
+            if ($type === 'WORK') {
+                $hasWorkingEmail = true;
+            }
+        }
+        return $hasWorkingEmail;
     }
 
     /**
@@ -104,7 +146,7 @@ class SendHandler implements RequestHandlerInterface
     {
         $result = [];
         foreach ($this->contacts as $contact) {
-            $emails = self::getContactEmails($contact);
+            $emails = $this->getContactEmails($contact);
 
             $result[] = [
                 'name' => $contact['name'],
@@ -112,6 +154,7 @@ class SendHandler implements RequestHandlerInterface
             ];
         }
         $this->contacts = $result;
+
         return $this;
     }
 
@@ -127,14 +170,17 @@ class SendHandler implements RequestHandlerInterface
     /**
      * Prepares data for request to unisender api
      *
+     * @param string $accountId
      * @return array
      */
-    public function prepareForUnisender(): array
+    public function prepareForUnisender(string $accountId): array
     {
+        $listName = $accountId;
+        $listIds = $this->getListIdByName($listName);
         $fieldNames = [
             "field_names[0]" => 'email',
             "field_names[1]" => 'Name',
-            //"field_names[2]" => 'email_list_ids',
+            "field_names[2]" => 'email_list_ids',
         ];
         $fieldData = [];
         $contactRow = 0;
@@ -142,10 +188,57 @@ class SendHandler implements RequestHandlerInterface
             foreach ($contact['emails'] as $email) {
                 $fieldData["data[$contactRow][0]"] = $email;
                 $fieldData["data[$contactRow][1]"] = $contact['name'];
-                //$fieldData["data[$contactRow][2]"] = $this->listId;
+                $fieldData["data[$contactRow][2]"] = $listIds;
                 $contactRow += 1;
             }
         }
         return array_merge($fieldNames, $fieldData);
+    }
+
+    public function isListExists(string $listName): bool
+    {
+        $unisenderApi = new UnisenderApi($this->apiKey);
+        $isExists = strpos($unisenderApi->getLists(), $listName);
+        return is_int($isExists);
+    }
+
+    /**
+     * Checks if list is exist unless creates it
+     *
+     * @param string $listName
+     * @return string
+     */
+    public function getListIdByName(string $listName): string
+    {
+        try {
+            if (!$this->isListExists($listName)) {
+                $this->createList($listName);
+            }
+
+            $unisenderApi = new UnisenderApi($this->apiKey);
+            $unisenderLists = json_decode($unisenderApi->getLists(), true);
+
+            foreach ($unisenderLists['result'] as $list) {
+                if ($list['title'] === $listName) {
+                    return (string) $list['id'];
+                }
+            }
+            throw new Exception('Problem occurred. contact the developers for help');
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
+    }
+
+    /**
+     * Creates contacts list in unisendler
+     *
+     * @param string $listName
+     * @return void
+     */
+    public function createList(string $listName): void
+    {
+        $unisenderApi = new UnisenderApi($this->apiKey);
+        $params = ['title' => $listName];
+        $unisenderApi->createList($params);
     }
 }
