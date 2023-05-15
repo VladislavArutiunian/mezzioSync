@@ -12,9 +12,17 @@ use Sync\Api\ApiService;
 
 class ContactsHandler implements RequestHandlerInterface
 {
-    private string $secretKey; // TODO: PHPDocs
-    private string $integrationId; // TODO: PHPDocs
-    private string $returnUrl; // TODO: PHPDocs
+    /**
+     * Secret key from integration
+     * @var string|mixed
+     */
+    private string $secretKey;
+
+    /* @var string|mixed */
+    private string $integrationId;
+
+    /* @var string|mixed */
+    private string $returnUrl;
 
     /**
      * ContactsHandler констурктор

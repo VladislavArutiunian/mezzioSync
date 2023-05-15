@@ -26,19 +26,13 @@ class SendHandler implements RequestHandlerInterface
     private string $apiKey;
 
     /* @var string */
-    private string $returnUrl; // TODO: PHPDocs
+    private string $returnUrl;
 
     /* @var string */
-    private string $integrationId; // TODO: PHPDocs
+    private string $integrationId;
 
     /* @var string */
-    private string $secretKey; // TODO: PHPDocs
-
-    /**
-     * Contacts from kommo
-     * @var array
-     */
-    private array $contacts; // TODO: есть ли необходимость выносить в свойство?
+    private string $secretKey;
 
     public function __construct(array $integration, array $unisender)
     {
@@ -58,13 +52,6 @@ class SendHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        /**
-         * TODO
-         * В хенделе не должно быть никакой основно бизнес логики, как здесь - это нужно
-         * вынести во внешние классы (ООП). Не используется пагинация для унисендера,
-         * поэтому, если у тебя будет 25000 контактов, будет отправлена только часть.
-         */
-
         try {
             $accountId = $request->getQueryParams()['id'];
             if (!isset($accountId)) {
@@ -74,14 +61,14 @@ class SendHandler implements RequestHandlerInterface
             exit($e->getMessage());
         }
 
-        $this->contacts =
+        $contacts =
             (new ApiService(
                 $this->integrationId,
                 $this->secretKey,
                 $this->returnUrl
             ))->getContacts($request->getQueryParams());
 
-        $unisenderService = new UnisenderService($this->contacts, $this->apiKey);
+        $unisenderService = new UnisenderService($contacts, $this->apiKey);
         $unisenderService
             ->filterFields()
             ->filterContacts()
