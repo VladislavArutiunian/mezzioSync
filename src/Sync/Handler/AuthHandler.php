@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace Sync\Handler;
-
+// TODO: неиспользуемые юзы
 use http\Env\Response;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Container\ContainerInterface;
@@ -14,11 +14,11 @@ use Sync\Api\ApiService;
 
 class AuthHandler implements RequestHandlerInterface
 {
-    private string $secretKey;
-    private string $integrationId;
-    private string $authCode;
+    private string $secretKey; // TODO: PHPDocs
+    private string $integrationId; // TODO: PHPDocs
+    private string $authCode; // TODO: не используется
 
-    private string $returnUrl;
+    private string $returnUrl; // TODO: PHPDocs
 
     /**
      * ApiService конструктор.

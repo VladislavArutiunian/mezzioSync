@@ -26,19 +26,19 @@ class SendHandler implements RequestHandlerInterface
     private string $apiKey;
 
     /* @var string */
-    private string $returnUrl;
+    private string $returnUrl; // TODO: PHPDocs
 
     /* @var string */
-    private string $integrationId;
+    private string $integrationId; // TODO: PHPDocs
 
     /* @var string */
-    private string $secretKey;
+    private string $secretKey; // TODO: PHPDocs
 
     /**
      * Contacts from kommo
      * @var array
      */
-    private array $contacts;
+    private array $contacts; // TODO: есть ли необходимость выносить в свойство?
 
     public function __construct(array $integration, array $unisender)
     {

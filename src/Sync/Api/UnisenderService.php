@@ -100,7 +100,7 @@ class UnisenderService
         return $this;
     }
 
-    public function getContactEmails(array $contact): array
+    public function getContactEmails(array $contact): array // TODO: PHPDocs
     {
         $emails = [];
         foreach ($contact['custom_fields_values'][0]['values'] as $emailItem) {
@@ -115,7 +115,7 @@ class UnisenderService
      * @param string $accountId
      * @return array
      */
-    public function prepareForUnisender(string $accountId, array $contacts): array
+    public function prepareForUnisender(string $accountId, array $contacts): array // TODO: PHPDocs
     {
         $listName = $accountId;
         $listIds = $this->getListIdByName($listName);
@@ -137,7 +137,7 @@ class UnisenderService
         return array_merge($fieldNames, $fieldData);
     }
 
-    public function isListExists(string $listName): bool
+    public function isListExists(string $listName): bool // TODO: PHPDocs
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
         $isExists = strpos($unisenderApi->getLists(), $listName);
@@ -184,12 +184,12 @@ class UnisenderService
         $unisenderApi->createList($params);
     }
 
-    public function importContactsByLimit(string $accountId): array
+    public function importContactsByLimit(string $accountId): array // TODO: PHPDocs
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
         $responses = [];
 
-        if (count($this->contacts) <= 500) {
+        if (count($this->contacts) <= 500) { // TODO: можно этого не делать, не логично
             $params = $this->prepareForUnisender($accountId, $this->contacts);
             $responses[] = $unisenderApi->importContacts($params);
             return $responses;
@@ -200,6 +200,6 @@ class UnisenderService
             $params = $this->prepareForUnisender($accountId, $contacts);
             $responses[] = $unisenderApi->importContacts($params);
         }
-        return $responses;
+        return $responses; // TODO: почему бы не "схлопнуть" массив ответов в один, они же однотипные?
     }
 }
