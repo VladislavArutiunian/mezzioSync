@@ -2,16 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Sync\Handler;
+namespace Sync\Factory;
 
-use AmoCRM\EntitiesServices\Webhooks;
-use Mezzio\Router\RouterInterface;
-use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-
-use function assert;
-use function get_class;
+use Sync\Handler\ContactHandler;
 
 class ContactHandlerFactory
 {

@@ -35,7 +35,7 @@ class ConfigProvider
                 Handler\PingHandler::class => Handler\PingHandler::class,
             ],
             'factories'  => [
-                Handler\HomePageHandler::class => Handler\HomePageHandlerFactory::class,
+                Handler\HomePageHandler::class => Factory\HomePageHandlerFactory::class,
             ],
         ];
     }
@@ -47,9 +47,9 @@ class ConfigProvider
     {
         return [
             'paths' => [
-                'app'    => ['templates/app'],
-                'error'  => ['templates/error'],
-                'layout' => ['templates/layout'],
+                'app'    => [__DIR__ . '/../templates/app'],
+                'error'  => [__DIR__ . '/../templates/error'],
+                'layout' => [__DIR__ . '/../templates/layout'],
             ],
         ];
     }

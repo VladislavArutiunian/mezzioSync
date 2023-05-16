@@ -6,7 +6,6 @@ namespace App\Handler;
 
 use Chubbyphp\Container\MinimalContainer;
 use DI\Container as PHPDIContainer;
-use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Laminas\ServiceManager\ServiceManager;
 use Mezzio\LaminasView\LaminasViewRenderer;
@@ -95,6 +94,8 @@ class HomePageHandler implements RequestHandlerInterface
             $data['templateDocs'] = 'https://docs.laminas.dev/laminas-view/';
         }
 
-        return new HtmlResponse($this->template->render('app::home-page', $data));
+        return new JsonResponse([
+            'status' => 'ok'
+        ]);
     }
 }

@@ -2,12 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Sync\Handler;
+namespace Sync\Factory;
 
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Sync\Handler\AuthHandler;
 
 class AuthHandlerFactory
 {
