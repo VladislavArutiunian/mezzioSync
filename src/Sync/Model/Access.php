@@ -17,7 +17,11 @@ class Access extends Model
         'kommo_access_token',
         'unisender_api_key'
     ];
-
+    /**
+     * Relation to accounts table
+     *
+     * @return BelongsTo
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
