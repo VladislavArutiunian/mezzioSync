@@ -46,6 +46,9 @@
         "ext-json": "*",
         "amocrm/amocrm-api-library": "^0.13.0",
         "composer/package-versions-deprecated": "^1.10.99",
+        "davedevelopment/phpmig": "^1.7",
+        "illuminate/collections": "^8",
+        "illuminate/database": "^8",
         "laminas/laminas-component-installer": "^2.6",
         "laminas/laminas-config-aggregator": "^1.6",
         "laminas/laminas-diactoros": "^2.7",
@@ -54,6 +57,7 @@
         "mezzio/mezzio": "^3.7",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
+        "symfony/dotenv": "^5",
         "unisender/api-wrapper": "^1.6",
         "vlucas/phpdotenv": "^5.5"
     },
