@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Factory;
+namespace Sync\Factory;
 
-use App\Handler\HomePageHandler;
 use Mezzio\Router\RouterInterface;
 use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Sync\Handler\HomePageHandler;
 use function assert;
 use function get_class;
 

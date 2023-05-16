@@ -30,9 +30,7 @@ $aggregator = new ConfigAggregator([
         : function (): array {
             return [];
         },
-    // Default App module config
-    App\ConfigProvider::class,
-    // SyncTrait Module
+    // Sync Module
     Sync\ConfigProvider::class,
     // Load application config in a pre-defined order in such a way that local settings
     // overwrite global settings. (Loaded as first to last):

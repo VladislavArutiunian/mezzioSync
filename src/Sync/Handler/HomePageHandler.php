@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Handler;
+namespace Sync\Handler;
 
 use Chubbyphp\Container\MinimalContainer;
 use DI\Container as PHPDIContainer;
