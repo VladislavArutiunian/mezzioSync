@@ -1,6 +1,6 @@
 <?php
 
-namespace Sync\Api;
+namespace Sync\Service;
 
 use Exception;
 use Sync\Handler\SendHandler;
@@ -16,7 +16,7 @@ class UnisenderService
 
     /**
      * contacts from kommo
-     * @var string
+     * @var array
      */
     private array $contacts;
 
@@ -27,102 +27,13 @@ class UnisenderService
     }
 
     /**
-     * Filter contact with non-empty name and at least one email
-     *
-     * @return $this
-     */
-    public function filterContacts(): UnisenderService
-    {
-        $this->contacts = array_filter(
-            $this->contacts,
-            fn ($contact) => $contact['name'] && $this->hasAtLeastOneWorkingEmail($contact)
-        );
-        return $this;
-    }
-
-    /**
-     * Filter only email fields
-     *
-     * @return $this
-     */
-    public function filterFields(): UnisenderService
-    {
-        foreach ($this->contacts as &$contact) {
-            $fields = $contact['custom_fields_values'] ?? [];
-            $filteredFields = array_filter($fields, fn ($field) => $field['field_code'] === 'EMAIL');
-            $contact['custom_fields_values'] = array_values($filteredFields);
-        }
-        unset($contact);
-
-        return $this;
-    }
-
-    /**
-     * Checks if contact have at least 1 working email
-     *
-     * @param array $contact
-     * @return bool
-     */
-    public function hasAtLeastOneWorkingEmail(array $contact): bool
-    {
-        $hasWorkingEmail = false;
-        $emails = $contact['custom_fields_values'][0]['values'];
-        if (!$emails) {
-            return false;
-        }
-        foreach ($emails as $email) {
-            $type = $email["enum_code"];
-            if ($type === 'WORK') {
-                $hasWorkingEmail = true;
-            }
-        }
-        return $hasWorkingEmail;
-    }
-
-    /**
-     * Filter data which will be necessary for unisender
-     *
-     * @return $this
-     */
-    public function formatForUnisender(): UnisenderService
-    {
-        $result = [];
-        foreach ($this->contacts as $contact) {
-            $emails = $this->getContactEmails($contact);
-
-            $result[] = [
-                'name' => $contact['name'],
-                'emails' => $emails
-            ];
-        }
-        $this->contacts = $result;
-
-        return $this;
-    }
-
-    /**
-     * Get contact's emails
-     *
-     * @param array $contact
-     * @return array
-     */
-    public function getContactEmails(array $contact): array
-    {
-        $emails = [];
-        foreach ($contact['custom_fields_values'][0]['values'] as $emailItem) {
-            $emails[] = $emailItem['value'];
-        }
-        return $emails;
-    }
-
-    /**
      * Prepares data for request to unisender api
      *
      * @param string $accountId
      * @param array $contacts
      * @return array
      */
-    public function prepareForUnisender(string $accountId, array $contacts): array
+    public function prepareForRequest(string $accountId, array $contacts): array
     {
         $listName = $accountId;
         $listIds = $this->getListIdByName($listName);
@@ -214,7 +125,7 @@ class UnisenderService
 
         $contactsChunked = array_chunk($this->contacts, 500);
         foreach ($contactsChunked as $contacts) {
-            $params = $this->prepareForUnisender($accountId, $contacts);
+            $params = $this->prepareForRequest($accountId, $contacts);
             $responses[] = json_decode($unisenderApi->importContacts($params), true);
         }
 

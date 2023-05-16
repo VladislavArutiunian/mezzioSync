@@ -1,6 +1,6 @@
 <?php
 
-namespace Sync\Api;
+namespace Sync\Service;
 
 use AmoCRM\Client\AmoCRMApiClient;
 use AmoCRM\Exceptions\AmoCRMApiException;
