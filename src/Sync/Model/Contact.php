@@ -18,6 +18,11 @@ class Contact extends Model
         'emails'
     ];
 
+    /**
+     * Relation to accounts table
+     *
+     * @return BelongsTo
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);

@@ -17,16 +17,31 @@ class Account extends Model
         'kommo_id',
     ];
 
-    public function contact(): HasMany
+    /**
+     * Relation to contacts table
+     *
+     * @return HasMany
+     */
+    public function contacts(): HasMany
     {
         return $this->hasMany(Contact::class);
     }
 
+    /**
+     * Relation to accesses table
+     *
+     * @return HasOne
+     */
     public function access(): HasOne
     {
         return $this->hasOne(Access::class);
     }
 
+    /**
+     * Relation to integrations table
+     *
+     * @return HasOne
+     */
     public function integration(): HasOne
     {
         return $this->hasOne(Integration::class);

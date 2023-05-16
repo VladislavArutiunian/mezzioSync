@@ -19,6 +19,11 @@ class Integration extends Model
         'url'
     ];
 
+    /**
+     * Relation to accounts table
+     *
+     * @return BelongsTo
+     */
     public function account(): BelongsTo
     {
         return $this->belongsTo(Account::class);
