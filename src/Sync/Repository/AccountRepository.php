@@ -3,16 +3,12 @@
 namespace Sync\Repository;
 
 use Sync\Model\Account;
-use Sync\Model\Contact;
 
 class AccountRepository
 {
-    /**
-     * @param Account $account
-     * @return void
-     */
-    public function save(Account $account): void
+    public function getAllAccountsWithEntities()
     {
-        $account->save();
+//        return Account::with('access', 'integration', 'contacts')->get();
+        return Account::with('access', 'integration', 'contacts');
     }
 }
