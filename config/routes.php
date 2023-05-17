@@ -51,4 +51,5 @@ return static function (Application $app, MiddlewareFactory $factory, ContainerI
     $app->post('/webhook', Sync\Handler\WebhookHandler::class, 'webhook');
     $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
     $app->get('/send', Sync\Handler\SendHandler::class, 'send');
+    $app->post('/setup', Sync\Handler\SetupHandler::class, 'setup');
 };

@@ -8,3 +8,4 @@
 tokens.json
 /src/Sync/Handler/test.txt
 .env
+migrations/.migrations.log/
