@@ -10,7 +10,7 @@ use Sync\Handler\WebhookHandler;
 
 class WebhookHandlerFactory
 {
-    public function __invoke(ContainerInterface $container): RequestHandlerInterface
+    public function __invoke(ContainerInterface $container): RequestHandlerInterface // TODO
     {
         return new WebhookHandler();
     }

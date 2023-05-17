@@ -39,7 +39,7 @@ class SendHandler implements RequestHandlerInterface
      */
     private ContactRepository $contactRepository;
 
-    public function __construct(
+    public function __construct( // TODO
         IntegrationRepository $integrationRepository,
         AccessRepository $accessRepository,
         ContactRepository $contactRepository

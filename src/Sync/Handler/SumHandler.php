@@ -24,7 +24,7 @@ class SumHandler implements RequestHandlerInterface
         $getParams = $request->getQueryParams();
         $paramsSum = $this->getParamsSum($getParams);
 
-        $inputParamsString = is_null($getParams) ? '' : implode(', ', array_values($getParams));
+        $inputParamsString = is_null($getParams) ? '' : implode(', ', array_values($getParams)); // TODO
         $message = "Sum Operation performed successfully";
 
         $this->writeLog('info', $message, $inputParamsString, $paramsSum);

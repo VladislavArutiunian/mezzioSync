@@ -32,7 +32,7 @@ class Integration extends Model
     /**
      * @return string
      */
-    public function getReturnUrl(): string
+    public function getReturnUrl(): string // TODO
     {
         return $this->url;
     }
@@ -40,7 +40,7 @@ class Integration extends Model
     /**
      * @return string
      */
-    public function getIntegrationId(): string
+    public function getIntegrationId(): string // TODO
     {
         return $this->client_id;
     }
@@ -48,7 +48,7 @@ class Integration extends Model
     /**
      * @return string
      */
-    public function getSecretKey(): string
+    public function getSecretKey(): string // TODO
     {
         return $this->secret_key;
     }
@@ -56,7 +56,7 @@ class Integration extends Model
     /**
      * @return string
      */
-    public function getAccountId(): string
+    public function getAccountId(): string // TODO
     {
         return $this->account_id;
     }

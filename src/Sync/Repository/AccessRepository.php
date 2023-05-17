@@ -17,6 +17,10 @@ class AccessRepository
     public function saveToken(int $kommoId, array $token): void
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
+//        Access::create([
+//            'account_id' => $accountId,
+//            'kommo_access_token' => json_encode($token),
+//        ]);
         $access = new Access();
         $access->account_id = $accountId;
         $access->kommo_access_token = json_encode($token);
@@ -32,7 +36,7 @@ class AccessRepository
     public function deleteToken(int $kommoId): void
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        $access = (new Account())::find($accountId)->access()->first();
+        $access = (new Account())::find($accountId)->access()->first(); // TODO
         $access->delete();
     }
 
@@ -57,7 +61,7 @@ class AccessRepository
     public function getToken(string $kommoId): ?array
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        $token = (new Account())::find($accountId)->access->kommo_access_token;
+        $token = (new Account())::find($accountId)->access->kommo_access_token; // TODO
         return json_decode($token, true);
     }
 
@@ -70,6 +74,6 @@ class AccessRepository
     public function getApiKey(string $kommoId): ?string
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        return (new Account())::find($accountId)->access->unisender_api_key;
+        return (new Account())::find($accountId)->access->unisender_api_key; // TODO
     }
 }

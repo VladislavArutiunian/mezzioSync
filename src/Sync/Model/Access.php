@@ -16,7 +16,7 @@ class Access extends Model
         'account_id',
         'kommo_access_token',
         'unisender_api_key'
-    ];
+    ]; // TODO
     /**
      * Relation to accounts table
      *
