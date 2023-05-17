@@ -5,6 +5,9 @@ declare(strict_types=1);
 use Mezzio\Application;
 use Mezzio\MiddlewareFactory;
 use Psr\Container\ContainerInterface;
+use Sync\Handler\AuthHandler;
+use Sync\Handler\ContactsHandler;
+use Sync\Handler\HomePageHandler;
 
 /**
  * FastRoute route configuration
@@ -38,15 +41,12 @@ use Psr\Container\ContainerInterface;
  */
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', \Sync\Handler\HomePageHandler::class, 'home');
-//    $app->get('/api/ping', App\Handler\PingHandler::class, 'api.ping');
-//    $app->get('/sum', SyncTrait\Handler\AuthHandler::class, 'sum');
+    $app->get('/', HomePageHandler::class, 'home');
+    $app->get('/sum', AuthHandler::class, 'sum');
     $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
-//    $app->get('/contacts', SyncTrait\Handler\ContactsHandler::class, 'contacts');
-    //$app->get('/', SyncTrait\Handler\MainSyncHandler::class, 'main-sync');
+    $app->get('/contacts', ContactsHandler::class, 'contacts');
     $app->get('/webhook', Sync\Handler\WebhookHandler::class, 'webhook-get');
     $app->post('/webhook', Sync\Handler\WebhookHandler::class, 'webhook');
     $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
     $app->get('/send', Sync\Handler\SendHandler::class, 'send');
-    $app->get('/test', Sync\Handler\TestHandler::class, 'test');
 };

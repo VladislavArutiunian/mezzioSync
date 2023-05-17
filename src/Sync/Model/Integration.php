@@ -28,4 +28,36 @@ class Integration extends Model
     {
         return $this->belongsTo(Account::class);
     }
+
+    /**
+     * @return string
+     */
+    public function getReturnUrl(): string
+    {
+        return $this->url;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIntegrationId(): string
+    {
+        return $this->client_id;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSecretKey(): string
+    {
+        return $this->secret_key;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAccountId(): string
+    {
+        return $this->account_id;
+    }
 }

@@ -9,6 +9,7 @@ use Mezzio\Template\TemplateRendererInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Handler\HomePageHandler;
+
 use function assert;
 use function get_class;
 
@@ -16,10 +17,6 @@ class HomePageHandlerFactory
 {
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
-//        echo '<pre>';
-//        var_dump($container);
-//        die();
-
         $router = $container->get(RouterInterface::class);
         assert($router instanceof RouterInterface);
 

@@ -11,15 +11,14 @@ use AmoCRM\Filters\ContactsFilter;
 use AmoCRM\OAuth2\Client\Provider\AmoCRMException;
 use Exception;
 use League\OAuth2\Client\Token\AccessToken;
-use Sync\Common\Token;
 use Throwable;
 
 /**
- * Class ApiService.
+ * Class KommoApiService.
  *
  * @package SyncTrait\Api
  */
-class ApiService
+class KommoApiService
 {
     /** @var string Базовый домен авторизации. */
     private const TARGET_DOMAIN = 'kommo.com';
@@ -32,29 +31,27 @@ class ApiService
      */
     private AccessToken $accessToken;
 
+    private TokenService $tokenService;
+
     /**
-     * ApiService конструктор.
+     * KommoApiService конструктор.
      *
-     * @param string $integrationId
-     * @param string $integrationSecretKey
-     * @param string $integrationRedirectUri
+     * @param AmoCRMApiClient $apiClient
+     * @param TokenService $tokenService
      */
-    public function __construct(string $integrationId, string $integrationSecretKey, string $integrationRedirectUri)
+    public function __construct(AmoCRMApiClient $apiClient, TokenService $tokenService)
     {
-        $this->apiClient = new AmoCRMApiClient(
-            $integrationId,
-            $integrationSecretKey,
-            $integrationRedirectUri
-        );
+        $this->apiClient = $apiClient;
+        $this->tokenService = $tokenService;
     }
 
     /**
      * Получение токена доступа для аккаунта.
      *
      * @param array $queryParams Входные GET параметры. Имя параметра - id
-     * @return ApiService Имя авторизованного аккаунта.
+     * @return KommoApiService Имя авторизованного аккаунта.
      */
-    public function auth(array $queryParams): ApiService
+    public function auth(array $queryParams): KommoApiService
     {
         session_start();
 
@@ -63,7 +60,7 @@ class ApiService
             $_SESSION['service_id'] = $queryParams['id'];
         }
 
-        $isTokenExists = Token::isTokenExists($_SESSION['service_id']);
+        $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
 
         if (isset($queryParams['referer'])) {
             $this
@@ -75,7 +72,7 @@ class ApiService
 
         try {
             if ($isTokenExists) {
-                $this->accessToken = Token::readToken($_SESSION['service_id']);
+                $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
 
                 return $this;
             } elseif (!isset($queryParams['code'])) {
@@ -126,7 +123,7 @@ class ApiService
                 ->getAccessTokenByCode($queryParams['code']);
 
             if (!$this->accessToken->hasExpired()) {
-                Token::saveToken($_SESSION['service_id'], [
+                $this->tokenService->saveToken($_SESSION['service_id'], [
                     'base_domain' => $this->apiClient->getAccountBaseDomain(),
                     'access_token' => $this->accessToken->getToken(),
                     'refresh_token' => $this->accessToken->getRefreshToken(),
@@ -137,7 +134,7 @@ class ApiService
             die($e->getMessage());
         }
 
-        session_abort();
+        //session_abort();
         return $this;
     }
 
@@ -153,7 +150,7 @@ class ApiService
             if (!isset($queryParams['id']) && !isset($_SESSION['service_id'])) {
                 throw new Exception('provide an account id');
             }
-            $this->accessToken = Token::readToken($_SESSION['service_id']);
+            $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
             return $this
                 ->apiClient
                 ->getOAuthClient()
@@ -161,7 +158,7 @@ class ApiService
                 ->getResourceOwner($this->accessToken)
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
-            Token::deleteToken($_SESSION['service_id']);
+            $this->tokenService->deleteToken($_SESSION['service_id']);
             header('Location: ' . '/auth?id=' . $_SESSION['service_id']);
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
@@ -184,10 +181,10 @@ class ApiService
             $pageNumber = $queryParams['page'] ?? 1;
             $id = $queryParams['id'];
 
-            if (!Token::isTokenExists($id)) {
+            if (!$this->tokenService->isTokenExists($id)) {
                 header('Location: ' . "/auth?id=$id");
             }
-            $this->accessToken = Token::readToken($id);
+            $this->accessToken = $this->tokenService->readToken($id);
 
             $filter = new ContactsFilter();
             $filter->setLimit(250);
@@ -196,7 +193,7 @@ class ApiService
             while ($flaq) {
                 try {
                     $filter->setPage($pageNumber);
-                    $result[] = $this
+                    $bunch = $this
                         ->apiClient
                         ->setAccountBaseDomain($this->accessToken->jsonSerialize()['base_domain'])
                         ->setAccessToken($this->accessToken)
@@ -204,15 +201,16 @@ class ApiService
                         ->get($filter)
                         ->toArray();
                     $pageNumber += 1;
+                    $result = array_merge($result, $bunch);
                 } catch (AmoCRMApiNoContentException $e) {
                     $flaq = false;
                 } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
-                    Token::deleteToken($id);
+                    $this->tokenService->deleteToken($id);
                     header('Location: ' . "/auth?id=$id");
                     exit($e->getMessage());
                 }
             }
-            return $result[0];
+            return $result;
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
         }

@@ -4,9 +4,10 @@ namespace Sync\Service;
 
 use Exception;
 use Sync\Handler\SendHandler;
+use Sync\Repository\AccessRepository;
 use Unisender\ApiWrapper\UnisenderApi;
 
-class UnisenderService
+class UnisenderApiService
 {
     /**
      * api key unisender
@@ -14,15 +15,8 @@ class UnisenderService
      */
     private string $apiKey;
 
-    /**
-     * contacts from kommo
-     * @var array
-     */
-    private array $contacts;
-
-    public function __construct(array $contacts, string $apiKey)
+    public function __construct(string $apiKey)
     {
-        $this->contacts = $contacts;
         $this->apiKey = $apiKey;
     }
 
@@ -115,15 +109,16 @@ class UnisenderService
      * Limit for contact import to unisender - 500 per request
      * This method chunks contact's collection into several collections to do import
      *
+     * @param array $contacts
      * @param string $accountId
      * @return array
      */
-    public function importContactsByLimit(string $accountId): array
+    public function importContactsByLimit(array $contacts, string $accountId): array
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
         $responses = [];
 
-        $contactsChunked = array_chunk($this->contacts, 500);
+        $contactsChunked = array_chunk($contacts, 500);
         foreach ($contactsChunked as $contacts) {
             $params = $this->prepareForRequest($accountId, $contacts);
             $responses[] = json_decode($unisenderApi->importContacts($params), true);
