@@ -32,6 +32,10 @@ class SumHandler implements RequestHandlerInterface
         return new HtmlResponse("<p>Sum of params is $paramsSum</p>");
     }
 
+    /**
+     * @param array|null $getParams
+     * @return int
+     */
     public function getParamsSum(?array $getParams): int
     {
         if (is_null($getParams)) {
@@ -40,6 +44,13 @@ class SumHandler implements RequestHandlerInterface
         return array_sum(array_values($getParams));
     }
 
+    /**
+     * @param string $logType
+     * @param string $message
+     * @param string $inputParams
+     * @param int|null $result
+     * @return void
+     */
     public function writeLog(string $logType, string $message, string $inputParams, ?int $result)
     {
 //        $log = new Logger('sums-logger');
@@ -50,12 +61,16 @@ class SumHandler implements RequestHandlerInterface
 //        $log->pushHandler($stream);
 
         $output = "Message: $message; input params: $inputParams; result: $result";
-        switch ($logType) {
-            case "info":
+        try {
+            switch ($logType) {
+                case "info":
 //                $log->info($output);
-                break;
-            default:
-                throw new Exception("Unknown type of log Type");
+                    break;
+                default:
+                    throw new Exception("Unknown type of log Type");
+            }
+        } catch (Exception $e) {
+            exit($e->getMessage());
         }
     }
 }
