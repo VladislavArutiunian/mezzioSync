@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use Laminas\Diactoros\Response\HtmlResponse;
+use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -22,11 +22,11 @@ class ContactHandler implements RequestHandlerInterface
     /**
      * Unisender api_key from project configs
      *
-     * @var string
+     * @var AccessRepository
      */
     private AccessRepository $accessRepository;
 
-    public function __construct(AccessRepository $accessRepository)
+    public function __construct(AccessRepository $accessRepository) // TODO
     {
         $this->accessRepository = $accessRepository;
     }
@@ -43,14 +43,14 @@ class ContactHandler implements RequestHandlerInterface
         try {
             $queryParams = $request->getQueryParams();
             if (!isset($queryParams['id'])) {
-                throw new \Exception('Provide the contact email');
+                throw new Exception('Provide the contact email');
             }
             $apiKey = $this->accessRepository->getApiKey($queryParams['id']);
             if (!isset($request->getQueryParams()['email'])) {
-                throw new \Exception('Provide the contact email');
+                throw new Exception('Provide the contact email');
             }
             if (empty($apiKey)) {
-                throw new \Exception('Add the unisender api key to configs');
+                throw new Exception('Add the unisender api key to configs');
             }
             $params = [
                 'email' => $request->getQueryParams()['email'],
@@ -58,7 +58,7 @@ class ContactHandler implements RequestHandlerInterface
 
             $unisenderApi = new UnisenderApi($apiKey);
             $contactInfo = $unisenderApi->getContact($params);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             exit($e->getMessage());
         }
         http_response_code(200);

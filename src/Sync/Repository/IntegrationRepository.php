@@ -2,6 +2,7 @@
 
 namespace Sync\Repository;
 
+use Exception;
 use Sync\Model\Account;
 use Sync\Model\Integration;
 
@@ -13,7 +14,7 @@ class IntegrationRepository
      * @param Integration $integration
      * @return void
      */
-    public function save(Integration $integration): void
+    public function save(Integration $integration): void // TODO
     {
         $integration->save();
     }
@@ -23,13 +24,13 @@ class IntegrationRepository
      *
      * @param int|null $accountId
      * @return Integration
-     * @throws \Exception
+     * @throws Exception
      */
     public function getIntegration(?int $accountId): Integration
     {
-        $account = (new Account())::find($accountId);
+        $account = (new Account())::find($accountId); // TODO
         if (is_null($account)) {
-            throw new \Exception('create integration first !');
+            throw new Exception('create integration first !');
         }
         return $account->integration;
     }
@@ -42,8 +43,8 @@ class IntegrationRepository
      */
     public function getAccountIdByKommoId(string $accountId): ?int
     {
-        $account = (new Account())::where('kommo_id', '=', $accountId)->first();
-        return $account !== null ? $account->getAccountId() : null;
+        $account = (new Account())::where('kommo_id', '=', $accountId)->first(); // TODO
+        return $account !== null ? $account->getAccountId() : null; // TODO
     }
 
     /**
@@ -54,7 +55,7 @@ class IntegrationRepository
      */
     public function getAccountIdByClientId(string $clientId): int
     {
-        $integration = (new Integration())::where('client_id', '=', $clientId)->first();
+        $integration = (new Integration())::where('client_id', '=', $clientId)->first(); // TODO
         return $integration->getAccountId();
     }
 }

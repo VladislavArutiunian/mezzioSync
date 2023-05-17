@@ -18,8 +18,14 @@ use Sync\Service\TokenService;
 
 class ContactsHandler implements RequestHandlerInterface
 {
+    /**
+     * @var IntegrationRepository
+     */
     private IntegrationRepository $integrationRepository;
 
+    /**
+     * @var AccessRepository
+     */
     private AccessRepository $accessRepository;
 
     /**

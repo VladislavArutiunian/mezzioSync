@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use Laminas\Diactoros\Response\HtmlResponse;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Unisender\ApiWrapper\UnisenderApi;
 
 class WebhookHandler implements RequestHandlerInterface
 {
@@ -17,6 +15,10 @@ class WebhookHandler implements RequestHandlerInterface
     {
     }
 
+    /**
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
 //        file_put_contents(__DIR__ . '/test.txt', '');

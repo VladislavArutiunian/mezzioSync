@@ -21,10 +21,14 @@ class SendHandlerFactory
      */
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
-        return new SendHandler(
-            $container->get(IntegrationRepository::class),
-            $container->get(AccessRepository::class),
-            $container->get(ContactRepository::class)
-        );
+        try {
+            return new SendHandler(
+                $container->get(IntegrationRepository::class),
+                $container->get(AccessRepository::class),
+                $container->get(ContactRepository::class)
+            );
+        } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
+            exit($e->getMessage());
+        }
     }
 }

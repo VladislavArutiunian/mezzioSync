@@ -3,8 +3,6 @@
 namespace Sync\Service;
 
 use Exception;
-use Sync\Handler\SendHandler;
-use Sync\Repository\AccessRepository;
 use Unisender\ApiWrapper\UnisenderApi;
 
 class UnisenderApiService

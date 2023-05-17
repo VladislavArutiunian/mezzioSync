@@ -31,6 +31,9 @@ class KommoApiService
      */
     private AccessToken $accessToken;
 
+    /**
+     * @var TokenService
+     */
     private TokenService $tokenService;
 
     /**

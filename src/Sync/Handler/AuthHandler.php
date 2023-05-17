@@ -47,9 +47,9 @@ class AuthHandler implements RequestHandlerInterface
         $queryParams = $request->getQueryParams();
         $kommoId = $queryParams['id'];
 
-        $accountId = isset($queryParams['client_id']) ?
-            $this->integrationRepository->getAccountIdByClientId($queryParams['client_id']) :
-            $this->integrationRepository->getAccountIdByKommoId($kommoId);
+        $accountId = isset($queryParams['client_id'])
+            ? $this->integrationRepository->getAccountIdByClientId($queryParams['client_id'])
+            : $this->integrationRepository->getAccountIdByKommoId($kommoId);
 
         $integration = $this->integrationRepository->getIntegration($accountId);
         $apiClient = new AmoCRMApiClient(
