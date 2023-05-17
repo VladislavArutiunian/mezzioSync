@@ -16,7 +16,7 @@ class CreateTableAccesses extends Migration
             $table->increments('id');
             $table->foreignIdFor(Account::class, 'account_id');
             $table->json('kommo_access_token');
-            $table->string('unisender_api_key');
+            $table->string('unisender_api_key')->default('');
             $table->timestamps();
         });
     }

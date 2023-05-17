@@ -1,12 +1,13 @@
 <?php
 
-namespace Sync\Api;
+namespace Sync\Service;
 
 use Exception;
 use Sync\Handler\SendHandler;
+use Sync\Repository\AccessRepository;
 use Unisender\ApiWrapper\UnisenderApi;
 
-class UnisenderService
+class UnisenderApiService
 {
     /**
      * api key unisender
@@ -14,105 +15,9 @@ class UnisenderService
      */
     private string $apiKey;
 
-    /**
-     * contacts from kommo
-     * @var string
-     */
-    private array $contacts;
-
-    public function __construct(array $contacts, string $apiKey)
+    public function __construct(string $apiKey)
     {
-        $this->contacts = $contacts;
         $this->apiKey = $apiKey;
-    }
-
-    /**
-     * Filter contact with non-empty name and at least one email
-     *
-     * @return $this
-     */
-    public function filterContacts(): UnisenderService
-    {
-        $this->contacts = array_filter(
-            $this->contacts,
-            fn ($contact) => $contact['name'] && $this->hasAtLeastOneWorkingEmail($contact)
-        );
-        return $this;
-    }
-
-    /**
-     * Filter only email fields
-     *
-     * @return $this
-     */
-    public function filterFields(): UnisenderService
-    {
-        foreach ($this->contacts as &$contact) {
-            $fields = $contact['custom_fields_values'] ?? [];
-            $filteredFields = array_filter($fields, fn ($field) => $field['field_code'] === 'EMAIL');
-            $contact['custom_fields_values'] = array_values($filteredFields);
-        }
-        unset($contact);
-
-        return $this;
-    }
-
-    /**
-     * Checks if contact have at least 1 working email
-     *
-     * @param array $contact
-     * @return bool
-     */
-    public function hasAtLeastOneWorkingEmail(array $contact): bool
-    {
-        $hasWorkingEmail = false;
-        $emails = $contact['custom_fields_values'][0]['values'];
-        if (!$emails) {
-            return false;
-        }
-        foreach ($emails as $email) {
-            $type = $email["enum_code"];
-            if ($type === 'WORK') {
-                $hasWorkingEmail = true;
-            }
-        }
-        return $hasWorkingEmail;
-    }
-
-    /**
-     * Filter data which will be necessary for unisender
-     *
-     * @return $this
-     */
-    public function formatForUnisender(): UnisenderService
-    {
-        $result = [];
-        foreach ($this->contacts as $contact) {
-            $emails = $this->getContactEmails($contact);
-
-            $result[] = [
-                'name' => $contact['name'],
-                'emails' => $emails
-            ];
-        }
-        $this->contacts = $result;
-
-        return $this;
-    }
-
-    /**
-     * Get contact's emails
-     *
-     * @param array $contact
-     * @return array
-     */
-    public function getContactEmails(array $contact): array
-    {
-        $emails = [];
-        foreach ($contact['custom_fields_values'][0]['values'] as $emailItem) {
-            $emails[] = $emailItem['value'];
-        }
-        return $emails;
     }
 
     /**
@@ -122,7 +27,7 @@ class UnisenderService
      * @param array $contacts
      * @return array
      */
-    public function prepareForUnisender(string $accountId, array $contacts): array
+    public function prepareForRequest(string $accountId, array $contacts): array
     {
         $listName = $accountId;
         $listIds = $this->getListIdByName($listName);
@@ -204,17 +109,18 @@ class UnisenderService
      * Limit for contact import to unisender - 500 per request
      * This method chunks contact's collection into several collections to do import
      *
+     * @param array $contacts
      * @param string $accountId
      * @return array
      */
-    public function importContactsByLimit(string $accountId): array
+    public function importContactsByLimit(array $contacts, string $accountId): array
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
         $responses = [];
 
-        $contactsChunked = array_chunk($this->contacts, 500);
+        $contactsChunked = array_chunk($contacts, 500);
         foreach ($contactsChunked as $contacts) {
-            $params = $this->prepareForUnisender($accountId, $contacts);
+            $params = $this->prepareForRequest($accountId, $contacts);
             $responses[] = json_decode($unisenderApi->importContacts($params), true);
         }
 

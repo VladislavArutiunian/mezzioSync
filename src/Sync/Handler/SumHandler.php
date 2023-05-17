@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
+use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
-use Mezzio\Template\TemplateRendererInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Monolog\Logger;
-use Monolog\Handler\StreamHandler;
-use Mezzio\Router;
 
 class SumHandler implements RequestHandlerInterface
 {
+    /**
+     * Require Get params
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws Exception
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $getParams = $request->getQueryParams();
@@ -51,7 +55,7 @@ class SumHandler implements RequestHandlerInterface
 //                $log->info($output);
                 break;
             default:
-                throw new \Exception("Unknown type of log Type");
+                throw new Exception("Unknown type of log Type");
         }
     }
 }

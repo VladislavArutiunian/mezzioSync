@@ -4,17 +4,32 @@ declare(strict_types=1);
 
 namespace Sync;
 
+use Sync\Repository\AccessRepository;
+use Sync\Repository\IntegrationRepository;
+use Sync\Factory\AuthHandlerFactory;
+use Sync\Factory\ContactHandlerFactory;
+use Sync\Factory\ContactServiceFactory;
+use Sync\Factory\ContactsHandlerFactory;
+use Sync\Factory\HomePageHandlerFactory;
+use Sync\Factory\KommoApiServiceFactory;
+use Sync\Factory\SendHandlerFactory;
+use Sync\Factory\SumHandlerFactory;
+use Sync\Factory\TestHandlerFactory;
+use Sync\Factory\UnisenderApiServiceFactory;
+use Sync\Factory\WebhookHandlerFactory;
 use Sync\Handler\AuthHandler;
-use Sync\Handler\AuthHandlerFactory;
 use Sync\Handler\ContactHandler;
-use Sync\Handler\ContactHandlerFactory;
 use Sync\Handler\ContactsHandler;
-use Sync\Handler\ContactsHandlerFactory;
+use Sync\Handler\HomePageHandler;
 use Sync\Handler\SendHandler;
-use Sync\Handler\SendHandlerFactory;
 use Sync\Handler\SumHandler;
-use Sync\Handler\WebhookHandlerFactory;
+use Sync\Handler\TestHandler;
 use Sync\Handler\WebhookHandler;
+use Sync\Repository\AccountRepository;
+use Sync\Repository\ContactRepository;
+use Sync\Service\ContactService;
+use Sync\Service\KommoApiService;
+use Sync\Service\UnisenderApiService;
 
 /**
  * The configuration provider for the App module
@@ -43,13 +58,20 @@ class ConfigProvider
     public function getDependencies(): array
     {
         return [
-            'invokables' => [],
+            'invokables' => [
+                // Repositories
+                AccountRepository::class => AccountRepository::class,
+                ContactRepository::class => ContactRepository::class,
+                AccessRepository::class => AccessRepository::class,
+                IntegrationRepository::class => IntegrationRepository::class,
+            ],
             'factories' => [
-//                SumHandler::class => SumHandlerFactory::class,
+                // Handlers
+                HomePageHandler::class => HomePageHandlerFactory::class,
+                SumHandler::class => SumHandlerFactory::class,
                 AuthHandler::class => AuthHandlerFactory::class,
-//                ContactsHandler::class => ContactsHandlerFactory::class,
-                WebhookHandler::class => WebhookHandlerFactory::class,
-                //MainSyncHandler::class => MainSyncHandlerFactory::class,
+                ContactsHandler::class => ContactsHandlerFactory::class,
+                //WebhookHandler::class => WebhookHandlerFactory::class,
                 ContactHandler::class => ContactHandlerFactory::class,
                 SendHandler::class => SendHandlerFactory::class,
             ],

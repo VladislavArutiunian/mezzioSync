@@ -28,7 +28,7 @@ services:
       - ./docker/nginx/templates/:/etc/nginx/templates/
       - ./public/:/var/www/application/public/
     ports:
-      - "80:80"
+      - "8080:80"
       - "443:443"
 
   # MySQL Service

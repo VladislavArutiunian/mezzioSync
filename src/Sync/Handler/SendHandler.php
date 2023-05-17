@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
+use AmoCRM\Client\AmoCRMApiClient;
 use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Sync\Api\ApiService;
-use Sync\Api\UnisenderService;
+use Sync\Repository\AccessRepository;
+use Sync\Repository\IntegrationRepository;
+use Sync\Service\KommoApiService;
+use Sync\Service\ContactService;
+use Sync\Service\TokenService;
+use Sync\Service\UnisenderApiService;
+use Sync\Model\Contact;
+use Sync\Repository\ContactRepository;
 use Unisender\ApiWrapper\UnisenderApi;
 
 /**
@@ -19,27 +26,20 @@ use Unisender\ApiWrapper\UnisenderApi;
  */
 class SendHandler implements RequestHandlerInterface
 {
-    /**
-     * api key unisender
-     * @var string
-     */
-    private string $apiKey;
+    private IntegrationRepository $integrationRepository;
 
-    /* @var string */
-    private string $returnUrl;
+    private AccessRepository $accessRepository;
 
-    /* @var string */
-    private string $integrationId;
+    private ContactRepository $contactRepository;
 
-    /* @var string */
-    private string $secretKey;
-
-    public function __construct(array $integration, array $unisender)
-    {
-        $this->secretKey = $integration['secret_key'];
-        $this->integrationId = $integration['integration_id'];
-        $this->returnUrl = $integration['return_url'];
-        $this->apiKey = $unisender['api_key'];
+    public function __construct(
+        IntegrationRepository $integrationRepository,
+        AccessRepository $accessRepository,
+        ContactRepository $contactRepository
+    ) {
+        $this->integrationRepository = $integrationRepository;
+        $this->accessRepository = $accessRepository;
+        $this->contactRepository = $contactRepository;
     }
 
     /**
@@ -52,29 +52,33 @@ class SendHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        try {
-            $accountId = $request->getQueryParams()['id'];
-            if (!isset($accountId)) {
-                throw new Exception('Provide an id in GET parameters');
-            }
-        } catch (Exception $e) {
-            exit($e->getMessage());
+        $queryParams = $request->getQueryParams();
+        $kommoId = $queryParams['id'];
+
+        if (!isset($kommoId)) {
+            throw new Exception('Provide an id in GET parameters');
         }
 
-        $contacts =
-            (new ApiService(
-                $this->integrationId,
-                $this->secretKey,
-                $this->returnUrl
-            ))->getContacts($request->getQueryParams());
+        $accountId = $this->integrationRepository->getAccountIdByKommoId($kommoId);
+        $integration = $this->integrationRepository->getIntegration($accountId);
+        $apiClient = new AmoCRMApiClient(
+            $integration->getIntegrationId(),
+            $integration->getSecretKey(),
+            $integration->getReturnUrl()
+        );
+        $tokenService = new TokenService($this->accessRepository);
 
-        $unisenderService = new UnisenderService($contacts, $this->apiKey);
-        $unisenderService
-            ->filterFields()
-            ->filterContacts()
-            ->formatForUnisender();
+        $kommoApiService = new KommoApiService($apiClient, $tokenService);
+        $contacts = $kommoApiService->getContacts($queryParams);
+        $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
 
-        $unisenderResp = $unisenderService->importContactsByLimit($accountId);
-        return new JsonResponse($unisenderResp);
+        $this->contactRepository->saveContacts($normalizedContacts, $accountId);
+
+        $apiKey = $this->accessRepository->getApiKey($kommoId);
+
+        $unisenderService = new UnisenderApiService($apiKey);
+        $unisenderResponse = $unisenderService->importContactsByLimit($normalizedContacts, $kommoId);
+
+        return new JsonResponse($unisenderResponse);
     }
 }

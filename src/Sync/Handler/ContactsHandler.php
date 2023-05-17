@@ -4,54 +4,62 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
+use AmoCRM\Client\AmoCRMApiClient;
+use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Sync\Api\ApiService;
+use Sync\Repository\AccessRepository;
+use Sync\Repository\IntegrationRepository;
+use Sync\Service\ContactService;
+use Sync\Service\KommoApiService;
+use Sync\Service\TokenService;
 
 class ContactsHandler implements RequestHandlerInterface
 {
-    /**
-     * Secret key from integration
-     * @var string|mixed
-     */
-    private string $secretKey;
+    private IntegrationRepository $integrationRepository;
 
-    /* @var string|mixed */
-    private string $integrationId;
-
-    /* @var string|mixed */
-    private string $returnUrl;
+    private AccessRepository $accessRepository;
 
     /**
      * ContactsHandler констурктор
      *
-     * @param array $integration
+     * @param IntegrationRepository $integrationRepository
+     * @param AccessRepository $accessRepository
      */
-    public function __construct(array $integration)
-    {
-        $this->secretKey = $integration['secret_key'];
-        $this->integrationId = $integration['integration_id'];
-        $this->returnUrl = $integration['return_url'];
+    public function __construct(
+        IntegrationRepository $integrationRepository,
+        AccessRepository $accessRepository
+    ) {
+        $this->integrationRepository = $integrationRepository;
+        $this->accessRepository = $accessRepository;
     }
 
+    /**
+     * Get all contacts from Kommo
+     *
+     * @param ServerRequestInterface $request
+     * @return ResponseInterface
+     * @throws Exception
+     */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $apiClient = new ApiService($this->integrationId, $this->secretKey, $this->returnUrl);
+        $queryParams = $request->getQueryParams();
+        $accountId = $this->integrationRepository->getAccountIdByKommoId($queryParams['id']);
+        $integration = $this->integrationRepository->getIntegration($accountId);
+        $apiClient = new AmoCRMApiClient(
+            $integration->getIntegrationId(),
+            $integration->getSecretKey(),
+            $integration->getReturnUrl()
+        );
+        $tokenService = new TokenService($this->accessRepository);
 
-        $contacts = $apiClient->getContacts($request->getQueryParams());
+        $kommoApiService = new KommoApiService($apiClient, $tokenService);
 
-        $contactsFiltered = array_map(function ($contact) {
-            $name = $contact['name'];
-            $emailsArr = $contact['custom_fields_values'][1]['values'] ?? [];
-            $emails = [];
-            foreach ($emailsArr as $email) {
-                $emails[] = $email['value'];
-            }
-            return ["name" => $name, "emails" => $emails];
-        }, $contacts);
+        $contacts = $kommoApiService->getContacts($queryParams);
+        $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
 
-        return new JsonResponse($contactsFiltered);
+        return new JsonResponse($normalizedContacts);
     }
 }

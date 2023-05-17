@@ -9,6 +9,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
+use Sync\Repository\AccessRepository;
 use Unisender\ApiWrapper\UnisenderApi;
 
 /**
@@ -23,16 +24,16 @@ class ContactHandler implements RequestHandlerInterface
      *
      * @var string
      */
-    private string $unisenderApiKey;
+    private AccessRepository $accessRepository;
 
-    public function __construct(string $unisenderApiKey)
+    public function __construct(AccessRepository $accessRepository)
     {
-        $this->unisenderApiKey = $unisenderApiKey;
+        $this->accessRepository = $accessRepository;
     }
 
     /**
      * Contact Handler
-     * Requires email GET parameter and api key from config
+     * Requires email GET parameter and api key from db
      *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
@@ -40,17 +41,22 @@ class ContactHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         try {
+            $queryParams = $request->getQueryParams();
+            if (!isset($queryParams['id'])) {
+                throw new \Exception('Provide the contact email');
+            }
+            $apiKey = $this->accessRepository->getApiKey($queryParams['id']);
             if (!isset($request->getQueryParams()['email'])) {
                 throw new \Exception('Provide the contact email');
             }
-            if (empty($this->unisenderApiKey)) {
+            if (empty($apiKey)) {
                 throw new \Exception('Add the unisender api key to configs');
             }
             $params = [
                 'email' => $request->getQueryParams()['email'],
             ];
 
-            $unisenderApi = new UnisenderApi($this->unisenderApiKey);
+            $unisenderApi = new UnisenderApi($apiKey);
             $contactInfo = $unisenderApi->getContact($params);
         } catch (\Exception $e) {
             exit($e->getMessage());
