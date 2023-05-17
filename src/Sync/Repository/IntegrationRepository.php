@@ -2,6 +2,7 @@
 
 namespace Sync\Repository;
 
+use Exception;
 use Sync\Model\Account;
 use Sync\Model\Integration;
 
@@ -23,13 +24,13 @@ class IntegrationRepository
      *
      * @param int|null $accountId
      * @return Integration
-     * @throws \Exception
+     * @throws Exception
      */
     public function getIntegration(?int $accountId): Integration
     {
         $account = (new Account())::find($accountId);
         if (is_null($account)) {
-            throw new \Exception('create integration first !');
+            throw new Exception('create integration first !');
         }
         return $account->integration;
     }

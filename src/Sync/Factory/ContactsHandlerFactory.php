@@ -20,9 +20,13 @@ class ContactsHandlerFactory
      */
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
-        return new ContactsHandler(
-            $container->get(IntegrationRepository::class),
-            $container->get(AccessRepository::class),
-        );
+        try {
+            return new ContactsHandler(
+                $container->get(IntegrationRepository::class),
+                $container->get(AccessRepository::class),
+            );
+        } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
+            exit($e->getMessage());
+        }
     }
 }

@@ -3,7 +3,6 @@
 namespace Sync\Repository;
 
 use Sync\Model\Account;
-use Sync\Model\Contact;
 
 class AccountRepository
 {
