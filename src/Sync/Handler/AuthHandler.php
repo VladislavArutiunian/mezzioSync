@@ -63,7 +63,7 @@ class AuthHandler implements RequestHandlerInterface
         $kommoApiService = new KommoApiService($apiClient, $tokenService);
         $kommoApiService->auth($queryParams);
 
-        $accountName = $kommoApiService->getName($queryParams);
+        $accountName = $kommoApiService->getName($kommoId);
 
         return new JsonResponse(["name" => $accountName]);
     }

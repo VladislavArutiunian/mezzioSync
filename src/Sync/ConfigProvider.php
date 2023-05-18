@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Sync;
 
+use Sync\Factory\SetupHandlerFactory;
+use Sync\Factory\DbAccountsHandlerFactory;
+use Sync\Handler\SetupHandler;
+use Sync\Handler\DbAccountsHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
 use Sync\Factory\AuthHandlerFactory;
@@ -60,6 +64,8 @@ class ConfigProvider
                 ContactsHandler::class => ContactsHandlerFactory::class,
                 ContactHandler::class => ContactHandlerFactory::class,
                 SendHandler::class => SendHandlerFactory::class,
+                DbAccountsHandler::class => DbAccountsHandlerFactory::class,
+                SetupHandler::class => SetupHandlerFactory::class,
             ],
         ];
     }

@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 /**
- * @method static find(int|null $accountId)
- * @method static where(string $string, string $string1, string $accountId)
+ * @property mixed $integration
+ * @property mixed $kommo_id
  */
 class Account extends Model
 {

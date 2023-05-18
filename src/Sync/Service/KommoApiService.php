@@ -144,16 +144,18 @@ class KommoApiService
     /**
      * Получить имя аккаунта
      *
-     * @param array $queryParams
+     * @param string|null $kommoId
      * @return string
      */
-    public function getName(array $queryParams): string
+    public function getName(?string $kommoId = null): string
     {
         try {
-            if (!isset($queryParams['id']) && !isset($_SESSION['service_id'])) {
+            if (is_null($kommoId) && !isset($_SESSION['service_id'])) {
                 throw new Exception('provide an account id');
+            } elseif (is_null($kommoId)) {
+                $kommoId = $_SESSION['service_id'];
             }
-            $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
+            $this->accessToken = $this->tokenService->readToken($kommoId);
             return $this
                 ->apiClient
                 ->getOAuthClient()
@@ -161,8 +163,8 @@ class KommoApiService
                 ->getResourceOwner($this->accessToken)
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
-            $this->tokenService->deleteToken($_SESSION['service_id']);
-            header('Location: ' . '/auth?id=' . $_SESSION['service_id']);
+            $this->tokenService->deleteToken($kommoId);
+            header('Location: ' . '/auth?id=' . $kommoId);
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
