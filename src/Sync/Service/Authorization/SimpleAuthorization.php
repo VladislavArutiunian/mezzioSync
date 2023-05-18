@@ -29,17 +29,13 @@ class SimpleAuthorization extends AbstractAuthorization
      * Получение токена доступа для аккаунта.
      *
      * @param array $queryParams Входные GET параметры. Имя параметра - id
-     * @return SimpleAuthorization Имя авторизованного аккаунта.
+     * @return string Kommo Id.
      */
-    public function auth(array $queryParams): SimpleAuthorization
+    public function auth(array $queryParams): string
     {
         try {
-            session_start();
             $accountId = $this->integrationRepository->getAccountIdByClientId($queryParams['client_id']);
             $kommoId = $this->integrationRepository->getKommoIdByAccountId($accountId);
-            if (!empty($kommoId)) {
-                $_SESSION['service_id'] = $kommoId;
-            }
 
             $integration = $this->integrationRepository->getIntegration($accountId);
             $this->apiClient = new AmoCRMApiClient(
@@ -48,7 +44,7 @@ class SimpleAuthorization extends AbstractAuthorization
                 $integration->url,
             );
 
-            $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
+            $isTokenExists = $this->tokenService->isTokenExists($kommoId);
 
             if (isset($queryParams['referer'])) {
                 $this
@@ -60,8 +56,8 @@ class SimpleAuthorization extends AbstractAuthorization
 
 
             if ($isTokenExists) {
-                $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
-                return $this;
+                $this->accessToken = $this->tokenService->readToken($kommoId);
+                return $kommoId;
             }
 
             $this->accessToken = $this
@@ -81,7 +77,6 @@ class SimpleAuthorization extends AbstractAuthorization
         } catch (Throwable $e) {
             die($e->getMessage());
         }
-        session_abort();
-        return $this;
+        return $kommoId;
     }
 }

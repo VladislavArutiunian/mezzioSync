@@ -5,6 +5,9 @@ namespace Sync\Repository;
 use Sync\Model\Access;
 use Sync\Model\Account;
 
+/**
+ * @property string $unisender_api_key
+ */
 class AccessRepository
 {
     /**
@@ -71,5 +74,20 @@ class AccessRepository
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
         return Account::find($accountId)->access->unisender_api_key;
+    }
+
+    /**
+     * Save to table accesses api key
+     *
+     * @param string $kommoId
+     * @param string $apiKey
+     * @return void
+     */
+    public function saveApiKey(string $kommoId, string $apiKey): void
+    {
+        $accountId = $this->getAccountIdByKommoId($kommoId);
+        $access = Access::where('account_id', '=', $accountId)->first();
+        $access->unisender_api_key = $apiKey;
+        $access->save();
     }
 }

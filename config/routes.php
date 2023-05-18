@@ -3,9 +3,14 @@
 declare(strict_types=1);
 
 use Mezzio\Application;
+use Sync\Handler\WidgetHandler;
 use Sync\Handler\AuthHandler;
+use Sync\Handler\ContactHandler;
 use Sync\Handler\ContactsHandler;
 use Sync\Handler\DbAccountsHandler;
+use Sync\Handler\SendHandler;
+use Sync\Handler\SetupHandler;
+use Sync\Handler\SumHandler;
 
 /**
  * FastRoute route configuration
@@ -39,11 +44,12 @@ use Sync\Handler\DbAccountsHandler;
  */
 
 return static function (Application $app): void {
-    $app->get('/sum', AuthHandler::class, 'sum');
-    $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
+    $app->get('/sum', SumHandler::class, 'sum');
+    $app->get('/auth', AuthHandler::class, 'auth');
     $app->get('/contacts', ContactsHandler::class, 'contacts');
     $app->get('/get-accounts', DbAccountsHandler::class, 'all-db-accounts');
-    $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
-    $app->get('/send', Sync\Handler\SendHandler::class, 'send');
-    $app->post('/setup', Sync\Handler\SetupHandler::class, 'setup');
+    $app->get('/contact', ContactHandler::class, 'contact');
+    $app->get('/send', SendHandler::class, 'send');
+    $app->post('/setup', SetupHandler::class, 'setup');
+    $app->post('/widget', WidgetHandler::class, 'widget');
 };
