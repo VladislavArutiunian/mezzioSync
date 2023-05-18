@@ -30,9 +30,9 @@ class StandardAuthorization extends AbstractAuthorization
      * Получение токена доступа для аккаунта.
      *
      * @param array $queryParams Входные GET параметры. Имя параметра - id
-     * @return StandardAuthorization Имя авторизованного аккаунта.
+     * @return string Kommo id.
      */
-    public function auth(array $queryParams): StandardAuthorization
+    public function auth(array $queryParams): string
     {
         session_start();
 
@@ -67,7 +67,7 @@ class StandardAuthorization extends AbstractAuthorization
             if ($isTokenExists) {
                 $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
 
-                return $this;
+                return $_SESSION['service_id'];
             } elseif (!isset($queryParams['code'])) {
                 $state = bin2hex(random_bytes(16));
                 $_SESSION['oauth2state'] = $state;
@@ -128,6 +128,6 @@ class StandardAuthorization extends AbstractAuthorization
         }
 
         session_abort();
-        return $this;
+        return $_SESSION['service_id'];
     }
 }

@@ -48,13 +48,13 @@ class AuthHandler implements RequestHandlerInterface
         } else {
             $authorization = new StandardAuthorization($this->accessRepository, $this->integrationRepository);
         }
-        $authorization->auth($queryParams);
+        $accountId = $authorization->auth($queryParams);
 
         $kommoApiClient = new KommoApiClient(
             $this->accessRepository,
             $this->integrationRepository
         );
-        $accountName = $kommoApiClient->getName($queryParams['id']);
+        $accountName = $kommoApiClient->getName($accountId);
 
         return new JsonResponse(["name" => $accountName]);
     }
