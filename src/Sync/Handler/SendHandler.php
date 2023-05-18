@@ -39,7 +39,12 @@ class SendHandler implements RequestHandlerInterface
      */
     private ContactRepository $contactRepository;
 
-    public function __construct( // TODO
+    /**
+     * @param IntegrationRepository $integrationRepository
+     * @param AccessRepository $accessRepository
+     * @param ContactRepository $contactRepository
+     */
+    public function __construct(
         IntegrationRepository $integrationRepository,
         AccessRepository $accessRepository,
         ContactRepository $contactRepository
@@ -70,9 +75,9 @@ class SendHandler implements RequestHandlerInterface
             $accountId = $this->integrationRepository->getAccountIdByKommoId($kommoId);
             $integration = $this->integrationRepository->getIntegration($accountId);
             $apiClient = new AmoCRMApiClient(
-                $integration->getIntegrationId(),
-                $integration->getSecretKey(),
-                $integration->getReturnUrl()
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url
             );
 
             $kommoApiService = new KommoApiClient($apiClient, $tokenService);

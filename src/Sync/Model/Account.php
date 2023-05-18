@@ -51,12 +51,4 @@ class Account extends Model
     {
         return $this->hasOne(Integration::class);
     }
-
-    /**
-     * @return mixed
-     */
-    public function getAccountId() // TODO
-    {
-        return $this->id;
-    }
 }

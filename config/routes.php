@@ -3,12 +3,9 @@
 declare(strict_types=1);
 
 use Mezzio\Application;
-use Mezzio\MiddlewareFactory;
-use Psr\Container\ContainerInterface;
 use Sync\Handler\AuthHandler;
 use Sync\Handler\ContactsHandler;
 use Sync\Handler\DbAccountsHandler;
-use Sync\Handler\HomePageHandler;
 
 /**
  * FastRoute route configuration
@@ -41,14 +38,11 @@ use Sync\Handler\HomePageHandler;
  * );
  */
 
-return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', HomePageHandler::class, 'home');
+return static function (Application $app): void {
     $app->get('/sum', AuthHandler::class, 'sum');
     $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
     $app->get('/contacts', ContactsHandler::class, 'contacts');
     $app->get('/get-accounts', DbAccountsHandler::class, 'all-db-accounts');
-    $app->get('/webhook', Sync\Handler\WebhookHandler::class, 'webhook-get');
-    $app->post('/webhook', Sync\Handler\WebhookHandler::class, 'webhook');
     $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
     $app->get('/send', Sync\Handler\SendHandler::class, 'send');
     $app->post('/setup', Sync\Handler\SetupHandler::class, 'setup');

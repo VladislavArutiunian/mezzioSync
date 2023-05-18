@@ -40,26 +40,30 @@ class StandardAuthorization extends AbstractAuthorization
         if (!empty($queryParams['id'])) {
             $_SESSION['service_id'] = $queryParams['id'];
         }
-
-        $accountId = $this->integrationRepository->getAccountIdByKommoId($_SESSION['service_id']);
-        $integration = $this->integrationRepository->getIntegration($accountId);
-        $this->apiClient = new AmoCRMApiClient(
-            $integration->getIntegrationId(),
-            $integration->getSecretKey(),
-            $integration->getReturnUrl()
-        );
-
-        $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
-
-        if (isset($queryParams['referer'])) {
-            $this
-                ->apiClient
-                ->setAccountBaseDomain($queryParams['referer'])
-                ->getOAuthClient()
-                ->setBaseDomain($queryParams['referer']);
-        }
-
         try {
+            if (!isset($queryParams['id']) && !isset($_SESSION['service_id'])) {
+                throw new Exception('provide acc id');
+            }
+
+            $accountId = $this->integrationRepository->getAccountIdByKommoId($_SESSION['service_id']);
+            $integration = $this->integrationRepository->getIntegration($accountId);
+            $this->apiClient = new AmoCRMApiClient(
+                $integration->getIntegrationId(),
+                $integration->getSecretKey(),
+                $integration->getReturnUrl()
+            );
+
+            $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
+
+            if (isset($queryParams['referer'])) {
+                $this
+                    ->apiClient
+                    ->setAccountBaseDomain($queryParams['referer'])
+                    ->getOAuthClient()
+                    ->setBaseDomain($queryParams['referer']);
+            }
+
+
             if ($isTokenExists) {
                 $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
 

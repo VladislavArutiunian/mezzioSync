@@ -9,10 +9,7 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Handler\SetupHandler;
-use Sync\Handler\DbAccountsHandler;
-use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
-use Sync\Repository\IntegrationRepository;
 
 class SetupHandlerFactory
 {

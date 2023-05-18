@@ -57,6 +57,7 @@
         "mezzio/mezzio": "^3.7",
         "mezzio/mezzio-fastroute": "^3.0.3",
         "mezzio/mezzio-helpers": "^5.7",
+        "monolog/monolog": "^2",
         "symfony/dotenv": "^5",
         "symfony/var-dumper": "^5",
         "unisender/api-wrapper": "^1.6",

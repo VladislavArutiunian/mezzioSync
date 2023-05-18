@@ -5,6 +5,10 @@ namespace Sync\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property false|mixed|string $kommo_access_token
+ * @property int|mixed|null $account_id
+ */
 class Access extends Model
 {
     /**
@@ -16,7 +20,8 @@ class Access extends Model
         'account_id',
         'kommo_access_token',
         'unisender_api_key'
-    ]; // TODO
+    ];
+
     /**
      * Relation to accounts table
      *
