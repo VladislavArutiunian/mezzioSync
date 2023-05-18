@@ -34,7 +34,7 @@ class IntegrationRepository
     public function getAccountIdByKommoId(string $accountId): ?int
     {
         $account = Account::where('kommo_id', '=', $accountId)->first();
-        return $account !== null ? $account->id : null; // TODO
+        return $account !== null ? $account->id : null;
     }
 
     /**
@@ -48,5 +48,18 @@ class IntegrationRepository
         $integration = Integration::where('client_id', '=', $clientId)->first();
 
         return $integration->account_id;
+    }
+
+    /**
+     * Gets kommo account id by table acc id
+     *
+     * @param int $accountId
+     * @return void
+     */
+    public function getKommoIdByAccountId(int $accountId): int
+    {
+        $integration = Integration::find($accountId)->first();
+
+        return $integration->account->kommo_id;
     }
 }

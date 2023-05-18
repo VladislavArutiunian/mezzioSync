@@ -4,16 +4,15 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use AmoCRM\Client\AmoCRMApiClient;
-use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
-use Sync\Service\KommoApiService;
-use Sync\Service\TokenService;
+use Sync\Service\Authorization\SimpleAuthorization;
+use Sync\Service\Authorization\StandardAuthorization;
+use Sync\Service\KommoApiClient;
 
 class AuthHandler implements RequestHandlerInterface
 {
@@ -40,34 +39,22 @@ class AuthHandler implements RequestHandlerInterface
      *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
-     * @throws Exception
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $kommoId = $queryParams['id'];
-
-        $accountId = isset($queryParams['client_id'])
-            ? $this->integrationRepository->getAccountIdByClientId($queryParams['client_id'])
-            : $this->integrationRepository->getAccountIdByKommoId($kommoId);
-
-        try {
-            $integration = $this->integrationRepository->getIntegration($accountId);
-        } catch (Exception $e) {
-            exit($e->getMessage());
+        if ($queryParams['from_widget']) {
+            $authorization = new SimpleAuthorization($this->accessRepository, $this->integrationRepository);
+        } else {
+            $authorization = new StandardAuthorization($this->accessRepository, $this->integrationRepository);
         }
-        $apiClient = new AmoCRMApiClient(
-            $integration->client_id,
-            $integration->secret_key,
-            $integration->url
+        $authorization->auth($queryParams);
+
+        $kommoApiClient = new KommoApiClient(
+            $this->accessRepository,
+            $this->integrationRepository
         );
-
-        $tokenService = new TokenService($this->accessRepository);
-
-        $kommoApiService = new KommoApiService($apiClient, $tokenService);
-        $kommoApiService->auth($queryParams);
-
-        $accountName = $kommoApiService->getName($kommoId);
+        $accountName = $kommoApiClient->getName($queryParams['id']);
 
         return new JsonResponse(["name" => $accountName]);
     }

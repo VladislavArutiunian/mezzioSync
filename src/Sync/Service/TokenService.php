@@ -6,7 +6,7 @@ use League\OAuth2\Client\Token\AccessToken;
 use Sync\Repository\AccessRepository;
 
 /**
- * Class KommoApiService.
+ * Class KommoApiClient.
  *
  * @package SyncTrait\Api
  */

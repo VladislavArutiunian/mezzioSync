@@ -15,7 +15,7 @@ class CreateTableIntegrations extends Migration
         Capsule::schema()->create('integrations', function (Blueprint $table) {
             $table->increments('id');
             $table->foreignIdFor(Account::class, 'account_id');
-            $table->string('client_id');
+            $table->string('client_id')->unique();
             $table->string('secret_key');
             $table->string('url');
             $table->timestamps();

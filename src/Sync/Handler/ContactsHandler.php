@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use AmoCRM\Client\AmoCRMApiClient;
 use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
@@ -13,19 +12,14 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
 use Sync\Service\ContactService;
-use Sync\Service\KommoApiService;
-use Sync\Service\TokenService;
+use Sync\Service\KommoApiClient;
 
 class ContactsHandler implements RequestHandlerInterface
 {
-    /**
-     * @var IntegrationRepository
-     */
+    /** @var IntegrationRepository  */
     private IntegrationRepository $integrationRepository;
 
-    /**
-     * @var AccessRepository
-     */
+    /** @var AccessRepository  */
     private AccessRepository $accessRepository;
 
     /**
@@ -52,18 +46,13 @@ class ContactsHandler implements RequestHandlerInterface
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
         $queryParams = $request->getQueryParams();
-        $accountId = $this->integrationRepository->getAccountIdByKommoId($queryParams['id']);
-        $integration = $this->integrationRepository->getIntegration($accountId);
-        $apiClient = new AmoCRMApiClient(
-            $integration->client_id,
-            $integration->secret_key,
-            $integration->url
+
+        $kommoApiClient = new KommoApiClient(
+            $this->accessRepository,
+            $this->integrationRepository
         );
-        $tokenService = new TokenService($this->accessRepository);
+        $contacts = $kommoApiClient->getContacts($queryParams);
 
-        $kommoApiService = new KommoApiService($apiClient, $tokenService);
-
-        $contacts = $kommoApiService->getContacts($queryParams);
         $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
 
         return new JsonResponse($normalizedContacts);

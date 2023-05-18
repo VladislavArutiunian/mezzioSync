@@ -11,6 +11,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Handler\DbAccountsHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
+use Sync\Repository\IntegrationRepository;
 
 class DbAccountsHandlerFactory
 {
@@ -24,6 +25,7 @@ class DbAccountsHandlerFactory
             return new DbAccountsHandler(
                 $container->get(AccountRepository::class),
                 $container->get(AccessRepository::class),
+                $container->get(IntegrationRepository::class),
             );
         } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
             exit($e->getMessage());
