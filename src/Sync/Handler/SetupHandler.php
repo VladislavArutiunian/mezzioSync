@@ -9,10 +9,7 @@ use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
-use Sync\Repository\IntegrationRepository;
-use Sync\Service\AccountService;
 
 /** Class SetupHandler creates Account and related Integration */
 class SetupHandler implements RequestHandlerInterface
@@ -38,19 +35,20 @@ class SetupHandler implements RequestHandlerInterface
         try {
             $this->accountRepository->createAccountWithIntegration($body);
         } catch (Exception $e) {
-            $response = [
+            $errorResponse = [
                 'status' => 'error',
                 'data' => [
                     'message' => 'DataBase connection issues'
                 ]
             ];
+            return new JsonResponse($errorResponse);
         }
-        $response = [
+        $successResponse = [
             'status' => 'success',
             'data' => [
                 'message' => ''
             ]
         ];
-        return new JsonResponse($response);
+        return new JsonResponse($successResponse);
     }
 }

@@ -30,7 +30,7 @@ class AccountService
 
     public function buildResponse(): array
     {
-        $accounts = $this->accountRepository->getAllAccountsWithEntities();
+        $accounts = $this->accountRepository->getAllWithEntities();
         $accountInfo = [];
         $accountsWithAccesses = $accounts->has('access')->get();
         $accountNamesWithAccesses = [];

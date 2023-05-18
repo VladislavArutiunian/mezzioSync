@@ -15,7 +15,7 @@ use Unisender\ApiWrapper\UnisenderApi;
 /**
  * Class Contact
  *
- * Selects contact from Unisendler
+ * Selects contact from Unisender
  */
 class ContactHandler implements RequestHandlerInterface
 {
@@ -26,7 +26,10 @@ class ContactHandler implements RequestHandlerInterface
      */
     private AccessRepository $accessRepository;
 
-    public function __construct(AccessRepository $accessRepository) // TODO
+    /**
+     * @param AccessRepository $accessRepository
+     */
+    public function __construct(AccessRepository $accessRepository)
     {
         $this->accessRepository = $accessRepository;
     }

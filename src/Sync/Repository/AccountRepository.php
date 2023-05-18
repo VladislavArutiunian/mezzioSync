@@ -2,11 +2,16 @@
 
 namespace Sync\Repository;
 
+use Illuminate\Database\Eloquent\Builder;
 use Sync\Model\Account;
 
 class AccountRepository
 {
-    public function getAllAccountsWithEntities()
+    /**
+     * get all accounts with entities
+     * @return Builder
+     */
+    public function getAllWithEntities(): Builder
     {
         return Account::with('access', 'integration', 'contacts');
     }
@@ -14,6 +19,7 @@ class AccountRepository
     /**
      * Creates account and integration related to him
      *
+     * @param array $body
      * @return void
      */
     public function createAccountWithIntegration(array $body): void

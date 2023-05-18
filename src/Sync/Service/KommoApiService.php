@@ -144,7 +144,7 @@ class KommoApiService
     /**
      * Получить имя аккаунта
      *
-     * @param array $queryParams
+     * @param string|null $kommoId
      * @return string
      */
     public function getName(?string $kommoId = null): string
