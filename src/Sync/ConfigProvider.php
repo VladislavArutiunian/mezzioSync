@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Sync;
 
-use Sync\Factory\WidgetHandlerFactory;
 use Sync\Factory\AuthHandlerFactory;
 use Sync\Factory\ContactHandlerFactory;
 use Sync\Factory\ContactsHandlerFactory;
@@ -12,7 +11,7 @@ use Sync\Factory\DbAccountsHandlerFactory;
 use Sync\Factory\SendHandlerFactory;
 use Sync\Factory\SetupHandlerFactory;
 use Sync\Factory\SumHandlerFactory;
-use Sync\Handler\WidgetHandler;
+use Sync\Factory\WidgetHandlerFactory;
 use Sync\Handler\AuthHandler;
 use Sync\Handler\ContactHandler;
 use Sync\Handler\ContactsHandler;
@@ -20,6 +19,7 @@ use Sync\Handler\DbAccountsHandler;
 use Sync\Handler\SendHandler;
 use Sync\Handler\SetupHandler;
 use Sync\Handler\SumHandler;
+use Sync\Handler\WidgetHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
 use Sync\Repository\ContactRepository;
