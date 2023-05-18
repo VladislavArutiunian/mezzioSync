@@ -20,6 +20,10 @@ class AccountService
      */
     private AccessRepository $accessRepository;
 
+    /**
+     * @param AccountRepository $accountRepository
+     * @param AccessRepository $accessRepository
+     */
     public function __construct(
         AccountRepository $accountRepository,
         AccessRepository $accessRepository
@@ -28,6 +32,11 @@ class AccountService
         $this->accessRepository = $accessRepository;
     }
 
+    /**
+     * Возвращает ответ с аккаунтами и их связанными сущностями
+     *
+     * @return array
+     */
     public function buildResponse(): array
     {
         $accounts = $this->accountRepository->getAllWithEntities();
@@ -69,6 +78,12 @@ class AccountService
         ];
     }
 
+    /**
+     * Get kommo account from api
+     *
+     * @param Account $accountModel
+     * @return string
+     */
     public function getAccountNameFromKommoApi(Account $accountModel): string
     {
         $kommoApi = new KommoApiService(

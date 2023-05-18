@@ -17,6 +17,9 @@ class SetupHandler implements RequestHandlerInterface
     /** @var AccountRepository  */
     private AccountRepository $accountRepository;
 
+    /**
+     * @param AccountRepository $accountRepository
+     */
     public function __construct(
         AccountRepository $accountRepository
     ) {
