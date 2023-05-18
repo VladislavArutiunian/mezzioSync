@@ -53,9 +53,9 @@ class AuthHandler implements RequestHandlerInterface
 
         $integration = $this->integrationRepository->getIntegration($accountId);
         $apiClient = new AmoCRMApiClient(
-            $integration->getIntegrationId(),
-            $integration->getSecretKey(),
-            $integration->getReturnUrl()
+            $integration->client_id,
+            $integration->secret_key,
+            $integration->url
         );
 
         $tokenService = new TokenService($this->accessRepository);

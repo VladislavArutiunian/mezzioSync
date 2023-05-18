@@ -6,6 +6,8 @@ namespace Sync\Handler;
 
 use Exception;
 use Laminas\Diactoros\Response\HtmlResponse;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
@@ -24,7 +26,7 @@ class SumHandler implements RequestHandlerInterface
         $getParams = $request->getQueryParams();
         $paramsSum = $this->getParamsSum($getParams);
 
-        $inputParamsString = is_null($getParams) ? '' : implode(', ', array_values($getParams)); // TODO
+        $inputParamsString = empty($getParams) ? '' : implode(', ', array_values($getParams));
         $message = "Sum Operation performed successfully";
 
         $this->writeLog('info', $message, $inputParamsString, $paramsSum);
@@ -51,20 +53,21 @@ class SumHandler implements RequestHandlerInterface
      * @param int|null $result
      * @return void
      */
-    public function writeLog(string $logType, string $message, string $inputParams, ?int $result)
+    public function writeLog(string $logType, string $message, string $inputParams, ?int $result): void
     {
-//        $log = new Logger('sums-logger');
+        $log = new Logger('sums-logger');
         $currentDate = date('Y-m-d');
-//        $stream = new StreamHandler(
-//            dirname(__DIR__, 3) . "/log/$currentDate/request.log",
-//            Logger::DEBUG);
-//        $log->pushHandler($stream);
+        $stream = new StreamHandler(
+            dirname(__DIR__, 3) . "/log/$currentDate/request.log",
+            Logger::DEBUG
+        );
+        $log->pushHandler($stream);
 
         $output = "Message: $message; input params: $inputParams; result: $result";
         try {
             switch ($logType) {
                 case "info":
-//                $log->info($output);
+                    $log->info($output);
                     break;
                 default:
                     throw new Exception("Unknown type of log Type");

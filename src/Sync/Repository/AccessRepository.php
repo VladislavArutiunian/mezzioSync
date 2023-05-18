@@ -17,18 +17,14 @@ class AccessRepository
     public function saveToken(int $kommoId, array $token): void
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-//        Access::create([
-//            'account_id' => $accountId,
-//            'kommo_access_token' => json_encode($token),
-//        ]);
-        $access = new Access();
-        $access->account_id = $accountId;
-        $access->kommo_access_token = json_encode($token);
-        $access->save();
+        Access::create([
+            'account_id' => $accountId,
+            'kommo_access_token' => json_encode($token),
+        ]);
     }
 
     /**
-     * Delete fron db
+     * Delete from db
      *
      * @param int $kommoId
      * @return void
@@ -36,7 +32,7 @@ class AccessRepository
     public function deleteToken(int $kommoId): void
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        $access = (new Account())::find($accountId)->access()->first(); // TODO
+        $access = Account::find($accountId)->access()->first();
         $access->delete();
     }
 
@@ -48,8 +44,8 @@ class AccessRepository
      */
     public function getAccountIdByKommoId(string $accountId): ?int
     {
-        $account = (new Account())::where('kommo_id', '=', $accountId)->first();
-        return $account->getAccountId();
+        $account = Account::where('kommo_id', '=', $accountId)->first();
+        return $account->id;
     }
 
     /**
@@ -61,7 +57,7 @@ class AccessRepository
     public function getToken(string $kommoId): ?array
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        $token = (new Account())::find($accountId)->access->kommo_access_token; // TODO
+        $token = Account::find($accountId)->access->kommo_access_token;
         return json_decode($token, true);
     }
 
@@ -74,6 +70,6 @@ class AccessRepository
     public function getApiKey(string $kommoId): ?string
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
-        return (new Account())::find($accountId)->access->unisender_api_key; // TODO
+        return Account::find($accountId)->access->unisender_api_key;
     }
 }

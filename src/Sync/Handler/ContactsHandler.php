@@ -55,9 +55,9 @@ class ContactsHandler implements RequestHandlerInterface
         $accountId = $this->integrationRepository->getAccountIdByKommoId($queryParams['id']);
         $integration = $this->integrationRepository->getIntegration($accountId);
         $apiClient = new AmoCRMApiClient(
-            $integration->getIntegrationId(),
-            $integration->getSecretKey(),
-            $integration->getReturnUrl()
+            $integration->client_id,
+            $integration->secret_key,
+            $integration->url
         );
         $tokenService = new TokenService($this->accessRepository);
 

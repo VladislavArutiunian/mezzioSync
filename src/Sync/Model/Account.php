@@ -6,6 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+/**
+ * @method static find(int|null $accountId)
+ * @method static where(string $string, string $string1, string $accountId)
+ */
 class Account extends Model
 {
     /**
@@ -45,13 +49,5 @@ class Account extends Model
     public function integration(): HasOne
     {
         return $this->hasOne(Integration::class);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAccountId() // TODO
-    {
-        return $this->id;
     }
 }
