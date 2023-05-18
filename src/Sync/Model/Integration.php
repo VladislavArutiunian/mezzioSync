@@ -6,17 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
-<<<<<<< HEAD
- * @method static where(string $string, string $string1, string $clientId)
- * @property mixed $url
- * @property mixed $secret_key
- * @property mixed $client_id
-=======
  * @property mixed $url
  * @property mixed $client_id
  * @property mixed $secret_key
  * @method static where(string $string, string $string1, string $clientId)
->>>>>>> master
  */
 class Integration extends Model
 {

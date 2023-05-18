@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 /**
  * @property mixed $integration
  * @property mixed $kommo_id
- * @method static firstOrCreate(array $array)
  */
 class Account extends Model
 {
