@@ -85,6 +85,7 @@ class AccessRepository
      */
     public function saveApiKey(string $kommoId, string $apiKey): void
     {
+        // TODO: решение не до конца соответствует ТЗ
         $accountId = $this->getAccountIdByKommoId($kommoId);
         $access = Access::where('account_id', '=', $accountId)->first();
         $access->unisender_api_key = $apiKey;
