@@ -13,6 +13,9 @@ class UnisenderApiService
      */
     private string $apiKey;
 
+    /**
+     * @param string $apiKey
+     */
     public function __construct(string $apiKey)
     {
         $this->apiKey = $apiKey;
