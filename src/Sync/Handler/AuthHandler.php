@@ -51,7 +51,11 @@ class AuthHandler implements RequestHandlerInterface
             ? $this->integrationRepository->getAccountIdByClientId($queryParams['client_id'])
             : $this->integrationRepository->getAccountIdByKommoId($kommoId);
 
-        $integration = $this->integrationRepository->getIntegration($accountId);
+        try {
+            $integration = $this->integrationRepository->getIntegration($accountId);
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
         $apiClient = new AmoCRMApiClient(
             $integration->client_id,
             $integration->secret_key,
