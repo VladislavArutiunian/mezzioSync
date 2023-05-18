@@ -9,17 +9,6 @@ use Sync\Model\Integration;
 class IntegrationRepository
 {
     /**
-     * Save integration to db
-     *
-     * @param Integration $integration
-     * @return void
-     */
-    public function save(Integration $integration): void // TODO
-    {
-        $integration->save();
-    }
-
-    /**
      * Get integration by account_id
      *
      * @param int|null $accountId
@@ -28,7 +17,8 @@ class IntegrationRepository
      */
     public function getIntegration(?int $accountId): Integration
     {
-        $account = (new Account())::find($accountId); // TODO
+        $account = Account::find($accountId);
+
         if (is_null($account)) {
             throw new Exception('create integration first !');
         }
@@ -43,8 +33,8 @@ class IntegrationRepository
      */
     public function getAccountIdByKommoId(string $accountId): ?int
     {
-        $account = (new Account())::where('kommo_id', '=', $accountId)->first(); // TODO
-        return $account !== null ? $account->getAccountId() : null; // TODO
+        $account = Account::where('kommo_id', '=', $accountId)->first();
+        return $account !== null ? $account->id : null; // TODO
     }
 
     /**
@@ -55,7 +45,8 @@ class IntegrationRepository
      */
     public function getAccountIdByClientId(string $clientId): int
     {
-        $integration = (new Integration())::where('client_id', '=', $clientId)->first(); // TODO
-        return $integration->getAccountId();
+        $integration = Integration::where('client_id', '=', $clientId)->first();
+
+        return $integration->account_id;
     }
 }

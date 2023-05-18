@@ -9,13 +9,11 @@ use Sync\Repository\IntegrationRepository;
 use Sync\Factory\AuthHandlerFactory;
 use Sync\Factory\ContactHandlerFactory;
 use Sync\Factory\ContactsHandlerFactory;
-use Sync\Factory\HomePageHandlerFactory;
 use Sync\Factory\SendHandlerFactory;
 use Sync\Factory\SumHandlerFactory;
 use Sync\Handler\AuthHandler;
 use Sync\Handler\ContactHandler;
 use Sync\Handler\ContactsHandler;
-use Sync\Handler\HomePageHandler;
 use Sync\Handler\SendHandler;
 use Sync\Handler\SumHandler;
 use Sync\Repository\AccountRepository;
@@ -50,18 +48,16 @@ class ConfigProvider
         return [
             'invokables' => [
                 // Repositories
-                AccountRepository::class => AccountRepository::class, // TODO
-                ContactRepository::class => ContactRepository::class,
-                AccessRepository::class => AccessRepository::class,
-                IntegrationRepository::class => IntegrationRepository::class,
+                AccountRepository::class,
+                ContactRepository::class,
+                AccessRepository::class,
+                IntegrationRepository::class,
             ],
             'factories' => [
                 // Handlers
-                HomePageHandler::class => HomePageHandlerFactory::class,
                 SumHandler::class => SumHandlerFactory::class,
                 AuthHandler::class => AuthHandlerFactory::class,
                 ContactsHandler::class => ContactsHandlerFactory::class,
-                //WebhookHandler::class => WebhookHandlerFactory::class,
                 ContactHandler::class => ContactHandlerFactory::class,
                 SendHandler::class => SendHandlerFactory::class,
             ],

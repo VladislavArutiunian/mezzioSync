@@ -41,12 +41,9 @@ use Sync\Handler\HomePageHandler;
  */
 
 return static function (Application $app, MiddlewareFactory $factory, ContainerInterface $container): void {
-    $app->get('/', HomePageHandler::class, 'home');
     $app->get('/sum', AuthHandler::class, 'sum');
     $app->get('/auth', Sync\Handler\AuthHandler::class, 'auth');
     $app->get('/contacts', ContactsHandler::class, 'contacts');
-    $app->get('/webhook', Sync\Handler\WebhookHandler::class, 'webhook-get');
-    $app->post('/webhook', Sync\Handler\WebhookHandler::class, 'webhook');
     $app->get('/contact', Sync\Handler\ContactHandler::class, 'contact');
     $app->get('/send', Sync\Handler\SendHandler::class, 'send');
 };
