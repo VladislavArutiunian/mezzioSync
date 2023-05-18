@@ -91,4 +91,21 @@ class AccessRepository
         $access->unisender_api_key = $apiKey;
         $access->save();
     }
+
+    /**
+     * Is access token existsn and don't expire
+     *
+     * @param string $kommoId
+     * @return bool
+     */
+    public function isAccessTokenExists(string $kommoId): bool
+    {
+        $accountId = $this->getAccountIdByKommoId($kommoId);
+        $token = json_decode(Account::find($accountId)->access->kommo_access_token);
+        $tokenExpires = $token['expires'] ?? null;
+        if ($tokenExpires > time() && isset($token['access_token'])) {
+            return true;
+        }
+        return false;
+    }
 }
