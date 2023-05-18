@@ -4,19 +4,17 @@ declare(strict_types=1);
 
 namespace Sync\Handler;
 
-use AmoCRM\Client\AmoCRMApiClient;
 use Exception;
 use Laminas\Diactoros\Response\JsonResponse;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
-use Sync\Repository\IntegrationRepository;
-use Sync\Service\KommoApiClient;
-use Sync\Service\ContactService;
-use Sync\Service\TokenService;
-use Sync\Service\UnisenderApiService;
 use Sync\Repository\ContactRepository;
+use Sync\Repository\IntegrationRepository;
+use Sync\Service\ContactService;
+use Sync\Service\KommoApiClient;
+use Sync\Service\UnisenderApiService;
 
 /**
  * Class receives all contacts from kommo
@@ -71,16 +69,9 @@ class SendHandler implements RequestHandlerInterface
             if (!isset($kommoId)) {
                 throw new Exception('Provide an id in GET parameters');
             }
-            $tokenService = new TokenService($this->accessRepository);
             $accountId = $this->integrationRepository->getAccountIdByKommoId($kommoId);
-            $integration = $this->integrationRepository->getIntegration($accountId);
-            $apiClient = new AmoCRMApiClient(
-                $integration->client_id,
-                $integration->secret_key,
-                $integration->url
-            );
 
-            $kommoApiService = new KommoApiClient($apiClient, $tokenService);
+            $kommoApiService = new KommoApiClient($this->accessRepository, $this->integrationRepository);
             $contacts = $kommoApiService->getContacts($queryParams);
             $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
 

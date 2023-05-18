@@ -11,6 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
+use Sync\Repository\IntegrationRepository;
 use Sync\Service\AccountService;
 
 class DbAccountsHandler implements RequestHandlerInterface
@@ -25,12 +26,17 @@ class DbAccountsHandler implements RequestHandlerInterface
      */
     private AccessRepository $accessRepository;
 
+    /** @var IntegrationRepository  */
+    private IntegrationRepository $integrationRepository;
+
     public function __construct(
         AccountRepository $accountRepository,
-        AccessRepository $accessRepository
+        AccessRepository $accessRepository,
+        IntegrationRepository $integrationRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->accessRepository = $accessRepository;
+        $this->integrationRepository = $integrationRepository;
     }
 
     /**
@@ -44,7 +50,8 @@ class DbAccountsHandler implements RequestHandlerInterface
     {
         $accountService = new AccountService(
             $this->accountRepository,
-            $this->accessRepository
+            $this->accessRepository,
+            $this->integrationRepository
         );
         return new JsonResponse($accountService->buildResponse());
     }

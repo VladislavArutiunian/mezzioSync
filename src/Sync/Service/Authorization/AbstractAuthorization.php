@@ -16,20 +16,18 @@ abstract class AbstractAuthorization
     /** @var AmoCRMApiClient AmoCRM клиент. */
     public AmoCRMApiClient $apiClient;
 
-    /**
-     * @var AccessToken
-     */
+    /** @var AccessToken  */
     public AccessToken $accessToken;
 
-    /**
-     * @var TokenService
-     */
+    /** @var TokenService  */
     public TokenService $tokenService;
+
+    /** @var AccessRepository  */
     protected AccessRepository $accessRepository;
     protected IntegrationRepository $integrationRepository;
 
     /**
-     * KommoApiClient конструктор.
+     * AbstractAuthorization конструктор.
      *
      * @param AccessRepository $accessRepository
      * @param IntegrationRepository $integrationRepository
@@ -42,5 +40,9 @@ abstract class AbstractAuthorization
         $this->integrationRepository = $integrationRepository;
     }
 
+    /**
+     * @param array $queryParams
+     * @return mixed
+     */
     abstract public function auth(array $queryParams);
 }

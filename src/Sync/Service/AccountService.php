@@ -2,11 +2,11 @@
 
 namespace Sync\Service;
 
-use AmoCRM\Client\AmoCRMApiClient;
 use Exception;
 use Sync\Model\Account;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
+use Sync\Repository\IntegrationRepository;
 
 class AccountService
 {
@@ -20,16 +20,22 @@ class AccountService
      */
     private AccessRepository $accessRepository;
 
+    /** @var IntegrationRepository  */
+    private IntegrationRepository $integrationRepository;
+
     /**
      * @param AccountRepository $accountRepository
      * @param AccessRepository $accessRepository
+     * @param IntegrationRepository $integrationRepository
      */
     public function __construct(
         AccountRepository $accountRepository,
-        AccessRepository $accessRepository
+        AccessRepository $accessRepository,
+        IntegrationRepository $integrationRepository
     ) {
         $this->accountRepository = $accountRepository;
         $this->accessRepository = $accessRepository;
+        $this->integrationRepository = $integrationRepository;
     }
 
     /**
@@ -87,12 +93,8 @@ class AccountService
     public function getAccountNameFromKommoApi(Account $accountModel): string
     {
         $kommoApi = new KommoApiClient(
-            new AmoCRMApiClient(
-                $accountModel->integration->client_id,
-                $accountModel->integration->secret_key,
-                $accountModel->integration->url,
-            ),
-            new TokenService($this->accessRepository)
+            $this->accessRepository,
+            $this->integrationRepository
         );
         return $kommoApi->getName($accountModel->kommo_id);
     }

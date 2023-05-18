@@ -12,7 +12,7 @@ use Throwable;
 class StandardAuthorization extends AbstractAuthorization
 {
     /**
-     * KommoApiClient конструктор.
+     * StandardAuthorization конструктор.
      *
      * @param AccessRepository $accessRepository
      * @param IntegrationRepository $integrationRepository
@@ -48,9 +48,9 @@ class StandardAuthorization extends AbstractAuthorization
             $accountId = $this->integrationRepository->getAccountIdByKommoId($_SESSION['service_id']);
             $integration = $this->integrationRepository->getIntegration($accountId);
             $this->apiClient = new AmoCRMApiClient(
-                $integration->getIntegrationId(),
-                $integration->getSecretKey(),
-                $integration->getReturnUrl()
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url
             );
 
             $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);

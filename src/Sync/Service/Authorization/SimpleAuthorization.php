@@ -11,7 +11,7 @@ use Throwable;
 class SimpleAuthorization extends AbstractAuthorization
 {
     /**
-     * KommoApiClient конструктор.
+     * SimpleAuthorization конструктор.
      *
      * @param AccessRepository $accessRepository
      * @param IntegrationRepository $integrationRepository
@@ -33,31 +33,32 @@ class SimpleAuthorization extends AbstractAuthorization
      */
     public function auth(array $queryParams): SimpleAuthorization
     {
-        session_start();
-        $accountId = $this->integrationRepository->getAccountIdByClientId($queryParams['client_id']);
-        $kommoId = $this->integrationRepository->getKommoIdByAccountId($accountId);
-        if (!empty($kommoId)) {
-            $_SESSION['service_id'] = $kommoId;
-        }
-        $integration = $this->integrationRepository->getIntegration($accountId);
-        $this->apiClient = new AmoCRMApiClient(
-            $integration->client_id,
-            $integration->secret_key,
-            $integration->url,
-        );
-
-//        dd();
-        $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
-
-        if (isset($queryParams['referer'])) {
-            $this
-                ->apiClient
-                ->setAccountBaseDomain($queryParams['referer'])
-                ->getOAuthClient()
-                ->setBaseDomain($queryParams['referer']);
-        }
-
         try {
+            session_start();
+            $accountId = $this->integrationRepository->getAccountIdByClientId($queryParams['client_id']);
+            $kommoId = $this->integrationRepository->getKommoIdByAccountId($accountId);
+            if (!empty($kommoId)) {
+                $_SESSION['service_id'] = $kommoId;
+            }
+
+            $integration = $this->integrationRepository->getIntegration($accountId);
+            $this->apiClient = new AmoCRMApiClient(
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url,
+            );
+
+            $isTokenExists = $this->tokenService->isTokenExists($_SESSION['service_id']);
+
+            if (isset($queryParams['referer'])) {
+                $this
+                    ->apiClient
+                    ->setAccountBaseDomain($queryParams['referer'])
+                    ->getOAuthClient()
+                    ->setBaseDomain($queryParams['referer']);
+            }
+
+
             if ($isTokenExists) {
                 $this->accessToken = $this->tokenService->readToken($_SESSION['service_id']);
                 return $this;

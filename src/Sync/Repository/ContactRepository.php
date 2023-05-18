@@ -31,14 +31,11 @@ class ContactRepository
     {
         $contact = new Contact();
 
-        $contact::updateOrCreate(
-            [
+        $contact::updateOrCreate([
                 'kommo_contact_id' => $contactColl['id'],
-            ],
-            [
+            ], [
                 'account_id' => $accountId,
                 'emails' => json_encode($contactColl['emails'])
-            ]
-        );
+            ]);
     }
 }

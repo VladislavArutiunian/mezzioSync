@@ -2,6 +2,7 @@
 
 namespace Sync\Service;
 
+use AmoCRM\Client\AmoCRMApiClient;
 use AmoCRM\Exceptions\AmoCRMApiException;
 use AmoCRM\Exceptions\AmoCRMApiNoContentException;
 use AmoCRM\Exceptions\AmoCRMMissedTokenException;
@@ -9,7 +10,8 @@ use AmoCRM\Exceptions\AmoCRMoAuthApiException;
 use AmoCRM\Filters\ContactsFilter;
 use AmoCRM\OAuth2\Client\Provider\AmoCRMException;
 use Exception;
-use Sync\Service\Authorization\AbstractAuthorization;
+use Sync\Repository\AccessRepository;
+use Sync\Repository\IntegrationRepository;
 
 /**
  * Class KommoApiClient.
@@ -18,15 +20,23 @@ use Sync\Service\Authorization\AbstractAuthorization;
  */
 class KommoApiClient
 {
-    /** @var AbstractAuthorization  */
-    private AbstractAuthorization $abstractAuthorization;
+    /** @var IntegrationRepository  */
+    private IntegrationRepository $integrationRepository;
+
+    /** @var TokenService  */
+    private TokenService $tokenService;
+    private AmoCRMApiClient $apiClient;
 
     /**
-     * @param AbstractAuthorization $abstractAuthorization
+     * @param AccessRepository $accessRepository
+     * @param IntegrationRepository $integrationRepository
      */
-    public function __construct(AbstractAuthorization $abstractAuthorization)
-    {
-        $this->abstractAuthorization = $abstractAuthorization;
+    public function __construct(
+        AccessRepository $accessRepository,
+        IntegrationRepository $integrationRepository
+    ) {
+        $this->integrationRepository = $integrationRepository;
+        $this->tokenService = new TokenService($accessRepository);
     }
 
     /**
@@ -38,24 +48,30 @@ class KommoApiClient
     public function getName(?string $kommoId = null): string
     {
         try {
-            $tokenService = $this->abstractAuthorization->tokenService;
-
             if (is_null($kommoId) && !isset($_SESSION['service_id'])) {
                 throw new Exception('provide an account id');
             } elseif (is_null($kommoId)) {
                 $kommoId = $_SESSION['service_id'];
             }
 
-            $accessToken = $tokenService->readToken($kommoId);
+            $accessToken = $this->tokenService->readToken($kommoId);
 
-            return $this->abstractAuthorization
+            $accountId = $this->integrationRepository->getAccountIdByKommoId($kommoId);
+            $integration = $this->integrationRepository->getIntegration($accountId);
+            $this->apiClient = new AmoCRMApiClient(
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url
+            );
+
+            return $this
                 ->apiClient
                 ->getOAuthClient()
                 ->setBaseDomain($accessToken->jsonSerialize()['base_domain'])
                 ->getResourceOwner($accessToken)
                 ->getName();
         } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException | AmoCRMException $e) {
-            $tokenService->deleteToken($kommoId);
+            $this->tokenService->deleteToken($kommoId);
             header('Location: ' . '/auth?id=' . $kommoId);
             exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
@@ -72,20 +88,26 @@ class KommoApiClient
     public function getContacts(array $queryParams): array
     {
         try {
-            $tokenService = $this->abstractAuthorization->tokenService;
-
             if (!isset($queryParams['id'])) {
                 throw new Exception('provide an account id');
             }
 
+            $accountId = $this->integrationRepository->getAccountIdByKommoId($queryParams['id']);
+            $integration = $this->integrationRepository->getIntegration($accountId);
+            $this->apiClient = new AmoCRMApiClient(
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url
+            );
+
             $pageNumber = $queryParams['page'] ?? 1;
             $id = $queryParams['id'];
 
-            if (!$tokenService->isTokenExists($id)) {
+            if (!$this->tokenService->isTokenExists($id)) {
                 header('Location: ' . "/auth?id=$id");
             }
 
-            $accessToken = $tokenService->readToken($id);
+            $accessToken = $this->tokenService->readToken($id);
 
             $filter = new ContactsFilter();
             $filter->setLimit(250);
@@ -96,10 +118,9 @@ class KommoApiClient
                 try {
                     $filter->setPage($pageNumber);
                     $bunch = $this
-                        ->abstractAuthorization
                         ->apiClient
                         ->setAccountBaseDomain($accessToken->jsonSerialize()['base_domain'])
-                        ->setAccessToken($this->accessToken)
+                        ->setAccessToken($accessToken)
                         ->contacts()
                         ->get($filter)
                         ->toArray();
@@ -109,7 +130,7 @@ class KommoApiClient
                 } catch (AmoCRMApiNoContentException $e) {
                     $flaq = false;
                 } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
-                    $tokenService->deleteToken($id);
+                    $this->tokenService->deleteToken($id);
                     header('Location: ' . "/auth?id=$id");
                     exit($e->getMessage());
                 }

@@ -45,15 +45,13 @@ class ContactHandler implements RequestHandlerInterface
     {
         try {
             $queryParams = $request->getQueryParams();
-            if (!isset($queryParams['id'])) {
-                throw new Exception('Provide the contact email');
+            if (!isset($queryParams['id']) || !isset($request->getQueryParams()['email'])) {
+                throw new Exception('Not provided the contact email or account id');
             }
             $apiKey = $this->accessRepository->getApiKey($queryParams['id']);
-            if (!isset($request->getQueryParams()['email'])) {
-                throw new Exception('Provide the contact email');
-            }
+
             if (empty($apiKey)) {
-                throw new Exception('Add the unisender api key to configs');
+                throw new Exception('The unisender api key dont exist');
             }
             $params = [
                 'email' => $request->getQueryParams()['email'],
