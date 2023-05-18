@@ -52,4 +52,5 @@ return static function (Application $app): void {
     $app->get('/send', SendHandler::class, 'send');
     $app->post('/setup', SetupHandler::class, 'setup');
     $app->post('/widget', WidgetHandler::class, 'widget');
+    $app->post('/webhook', WidgetHandler::class, 'webhook');
 };
