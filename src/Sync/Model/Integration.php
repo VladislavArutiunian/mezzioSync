@@ -5,6 +5,12 @@ namespace Sync\Model;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @method static where(string $string, string $string1, string $clientId)
+ * @property mixed $url
+ * @property mixed $secret_key
+ * @property mixed $client_id
+ */
 class Integration extends Model
 {
     /**

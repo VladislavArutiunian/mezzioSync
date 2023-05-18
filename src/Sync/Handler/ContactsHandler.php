@@ -13,7 +13,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
 use Sync\Service\ContactService;
-use Sync\Service\KommoApiService;
+use Sync\Service\KommoApiClient;
 use Sync\Service\TokenService;
 
 class ContactsHandler implements RequestHandlerInterface
@@ -61,7 +61,7 @@ class ContactsHandler implements RequestHandlerInterface
         );
         $tokenService = new TokenService($this->accessRepository);
 
-        $kommoApiService = new KommoApiService($apiClient, $tokenService);
+        $kommoApiService = new KommoApiClient($apiClient, $tokenService);
 
         $contacts = $kommoApiService->getContacts($queryParams);
         $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);

@@ -12,11 +12,11 @@ use Exception;
 use Sync\Service\Authorization\AbstractAuthorization;
 
 /**
- * Class KommoApiService.
+ * Class KommoApiClient.
  *
  * @package SyncTrait\Api
  */
-class KommoApiService
+class KommoApiClient
 {
     /** @var AbstractAuthorization  */
     private AbstractAuthorization $abstractAuthorization;

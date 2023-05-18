@@ -71,7 +71,7 @@ class AccountService
 
     public function getAccountNameFromKommoApi(Account $accountModel): string
     {
-        $kommoApi = new KommoApiService(
+        $kommoApi = new KommoApiClient(
             new AmoCRMApiClient(
                 $accountModel->integration->client_id,
                 $accountModel->integration->secret_key,

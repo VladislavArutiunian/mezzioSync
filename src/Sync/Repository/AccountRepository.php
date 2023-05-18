@@ -18,13 +18,17 @@ class AccountRepository
      */
     public function createAccountWithIntegration(array $body): void
     {
-        $account = Account::firstOrCreate([
+        $account = Account::updateOrCreate([
             'kommo_id' => $body['kommo_id']
         ]);
-        $account->integration()->firstOrCreate([
+        $account->integration()->updateOrCreate(
+            [
             'client_id' => $body['client_id'],
+            ],
+            [
             'secret_key' => $body['secret_key'],
             'url' => $body['url'],
-        ]);
+            ]
+        );
     }
 }
