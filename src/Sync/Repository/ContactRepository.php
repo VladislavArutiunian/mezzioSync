@@ -5,7 +5,12 @@ namespace Sync\Repository;
 use Sync\Model\Account;
 use Sync\Model\Contact;
 
-class ContactRepository // TODO: PHPDocs
+/**
+ * Класс ContactRepository
+ *
+ * Репозиторий для работы с контактами
+ */
+class ContactRepository
 {
     /**
      * Saving an array of contacts

@@ -8,7 +8,12 @@ use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
 use Sync\Service\TokenService;
 
-abstract class AbstractAuthorization // TODO: PHPDocs
+/**
+ * Класс AbstractAuthorization
+ *
+ * Абстракия для классов авторизаций
+ */
+abstract class AbstractAuthorization
 {
     /** @var string Базовый домен авторизации. */
     protected const TARGET_DOMAIN = 'kommo.com';
@@ -24,7 +29,9 @@ abstract class AbstractAuthorization // TODO: PHPDocs
 
     /** @var AccessRepository  */
     protected AccessRepository $accessRepository;
-    protected IntegrationRepository $integrationRepository; // TODO: PHPDocs
+
+    /** @var IntegrationRepository  */
+    protected IntegrationRepository $integrationRepository;
 
     /**
      * AbstractAuthorization конструктор.

@@ -5,7 +5,12 @@ namespace Sync\Repository;
 use Illuminate\Database\Eloquent\Builder;
 use Sync\Model\Account;
 
-class AccountRepository // TODO: PHPDocs
+/**
+ * Класс AccountRepository
+ *
+ * Репозиторий для работы с аккаунтами
+ */
+class AccountRepository
 {
     /**
      * get all accounts with entities
