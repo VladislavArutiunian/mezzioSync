@@ -37,7 +37,7 @@ class SimpleAuthorization extends AbstractAuthorization
             $accountId = $this->integrationRepository->getAccountIdByClientId($queryParams['client_id']);
             $kommoId = $this->integrationRepository->getKommoIdByAccountId($accountId);
 
-            $integration = $this->integrationRepository->getIntegration($accountId);
+            $integration = $this->integrationRepository->getIntegration($kommoId);
             $this->apiClient = new AmoCRMApiClient(
                 $integration->client_id,
                 $integration->secret_key,

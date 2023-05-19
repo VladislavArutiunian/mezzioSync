@@ -10,20 +10,30 @@ use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
+use Sync\Repository\IntegrationRepository;
+use Sync\Service\KommoApiClient;
 
 class WidgetHandler implements RequestHandlerInterface
 {
     /** @var AccessRepository  */
     private AccessRepository $accessRepository;
 
+    /** @var IntegrationRepository  */
+    private IntegrationRepository $integrationRepository;
+
     /**
      * ContactsHandler констурктор
      *
      * @param AccessRepository $accessRepository
+     * @param IntegrationRepository $integrationRepository
      */
-    public function __construct(AccessRepository $accessRepository)
+    public function __construct(
+        AccessRepository $accessRepository,
+        IntegrationRepository $integrationRepository
+    )
     {
         $this->accessRepository = $accessRepository;
+        $this->integrationRepository = $integrationRepository;
     }
 
     /**
@@ -41,6 +51,8 @@ class WidgetHandler implements RequestHandlerInterface
             }
 
             $this->accessRepository->saveApiKey($body['account_id'], $body['unisender_key']);
+            $kommoApiClient = new KommoApiClient($this->accessRepository, $this->integrationRepository);
+            $kommoApiClient->subscribeWebhook($body['account_id']);
         } catch (Exception $e) {
             exit($e->getMessage());
         }

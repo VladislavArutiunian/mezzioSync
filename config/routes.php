@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Mezzio\Application;
+use Sync\Handler\WebhookHandler;
 use Sync\Handler\WidgetHandler;
 use Sync\Handler\AuthHandler;
 use Sync\Handler\ContactHandler;
@@ -52,5 +53,5 @@ return static function (Application $app): void {
     $app->get('/send', SendHandler::class, 'send');
     $app->post('/setup', SetupHandler::class, 'setup');
     $app->post('/widget', WidgetHandler::class, 'widget');
-    $app->post('/webhook', WidgetHandler::class, 'webhook');
+    $app->post('/webhook', WebhookHandler::class, 'webhook');
 };

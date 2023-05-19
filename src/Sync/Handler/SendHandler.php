@@ -75,6 +75,7 @@ class SendHandler implements RequestHandlerInterface
             $contacts = $kommoApiService->getContacts($queryParams);
             $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
 
+
             $this->contactRepository->saveContacts($normalizedContacts, $accountId);
 
             $apiKey = $this->accessRepository->getApiKey($kommoId);

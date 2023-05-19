@@ -2,6 +2,7 @@
 
 namespace Sync\Service;
 
+/** Works with contacts, validate it to synchronization */
 class ContactService
 {
     /**

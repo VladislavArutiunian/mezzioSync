@@ -52,6 +52,7 @@ class TokenService
     public function readToken(int $clientId): AccessToken
     {
         $token = $this->accessRepository->getToken($clientId);
+
         return new AccessToken($token);
     }
 

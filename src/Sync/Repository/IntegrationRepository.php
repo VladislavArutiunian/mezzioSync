@@ -11,17 +11,12 @@ class IntegrationRepository
     /**
      * Get integration by account_id
      *
-     * @param int|null $accountId
+     * @param int $kommoId
      * @return Integration
-     * @throws Exception
      */
-    public function getIntegration(?int $accountId): Integration
+    public function getIntegration(int $kommoId): ?Integration
     {
-        $account = Account::find($accountId);
-
-        if (is_null($account)) {
-            throw new Exception('create integration first !');
-        }
+        $account = Account::where('kommo_id', $kommoId)->first();
         return $account->integration;
     }
 
@@ -34,7 +29,7 @@ class IntegrationRepository
     public function getAccountIdByKommoId(string $accountId): ?int
     {
         $account = Account::where('kommo_id', '=', $accountId)->first();
-        return $account !== null ? $account->id : null;
+        return $account->id;
     }
 
     /**
@@ -61,5 +56,10 @@ class IntegrationRepository
         $integration = Integration::find($accountId)->first();
 
         return $integration->account->kommo_id;
+    }
+
+    public function getUrl(string $accountId): string
+    {
+        return Account::where('kommo_id', $accountId)->first()->integration->url;
     }
 }
