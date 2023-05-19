@@ -99,7 +99,7 @@ class ApiContactService
      * @param array $contacts
      * @return array
      */
-    public function getNormalizedContacts(array $contacts): array
+    public function getNormalizedContacts(array $contacts): array // TODO: PHPDocs
     {
         $filtered = $this->filterContacts($this->filterFields($contacts));
         return $this->formatContacts($filtered);

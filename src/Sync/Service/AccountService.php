@@ -8,7 +8,8 @@ use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
 use Sync\Repository\IntegrationRepository;
 
-class AccountService
+
+class AccountService // TODO: PHPDocs
 {
     /**
      * @var AccountRepository

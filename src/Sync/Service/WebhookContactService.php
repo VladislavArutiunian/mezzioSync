@@ -6,6 +6,7 @@ namespace Sync\Service;
 class WebhookContactService
 {
     /**
+     * TODO: описание?
      * @param array $contact
      * @return array|array[]
      */
@@ -42,6 +43,7 @@ class WebhookContactService
    }
 
     /**
+     * TODO: описание?
      * @param array $emailFields
      * @return bool
      */

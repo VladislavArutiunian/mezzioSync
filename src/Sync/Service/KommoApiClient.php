@@ -26,7 +26,7 @@ class KommoApiClient
 
     /** @var TokenService  */
     private TokenService $tokenService;
-    private AmoCRMApiClient $amoCRMApiClient;
+    private AmoCRMApiClient $amoCRMApiClient; // TODO: PHPDocs
 
     /**
      * @param AccessRepository $accessRepository
