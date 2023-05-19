@@ -45,8 +45,10 @@ class StandardAuthorization extends AbstractAuthorization
                 throw new Exception('provide acc id');
             }
 
-            $accountId = $this->integrationRepository->getAccountIdByKommoId($_SESSION['service_id']);
-            $integration = $this->integrationRepository->getIntegration($accountId);
+            $integration = $this->integrationRepository->getIntegration($_SESSION['service_id']);
+            if (is_null($integration)) {
+                throw new Exception('create integration first !');
+            }
             $this->apiClient = new AmoCRMApiClient(
                 $integration->client_id,
                 $integration->secret_key,

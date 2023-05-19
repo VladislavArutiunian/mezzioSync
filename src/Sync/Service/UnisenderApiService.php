@@ -26,9 +26,10 @@ class UnisenderApiService
      *
      * @param string $accountId
      * @param array $contacts
+     * @param bool $delete
      * @return array
      */
-    public function prepareForRequest(string $accountId, array $contacts): array
+    public function prepareForRequest(string $accountId, array $contacts, bool $delete = false): array
     {
         $listName = $accountId;
         $listIds = $this->getListIdByName($listName);
@@ -36,14 +37,16 @@ class UnisenderApiService
             "field_names[0]" => 'email',
             "field_names[1]" => 'Name',
             "field_names[2]" => 'email_list_ids',
+            "field_names[3]" => 'delete',
         ];
         $fieldData = [];
         $contactRow = 0;
         foreach ($contacts as $contact) {
             foreach ($contact['emails'] as $email) {
                 $fieldData["data[$contactRow][0]"] = $email;
-                $fieldData["data[$contactRow][1]"] = $contact['name'];
+                $fieldData["data[$contactRow][1]"] = $contact['name'] ?? '';
                 $fieldData["data[$contactRow][2]"] = $listIds;
+                $fieldData["data[$contactRow][3]"] = (int) $delete;
                 $contactRow += 1;
             }
         }
@@ -112,16 +115,17 @@ class UnisenderApiService
      *
      * @param array $contacts
      * @param string $accountId
+     * @param bool $delete
      * @return array
      */
-    public function importContactsByLimit(array $contacts, string $accountId): array
+    public function importContactsByLimit(array $contacts, string $accountId, bool $delete = false): array
     {
         $unisenderApi = new UnisenderApi($this->apiKey);
         $responses = [];
 
         $contactsChunked = array_chunk($contacts, 500);
         foreach ($contactsChunked as $contacts) {
-            $params = $this->prepareForRequest($accountId, $contacts);
+            $params = $this->prepareForRequest($accountId, $contacts, $delete);
             $responses[] = json_decode($unisenderApi->importContacts($params), true);
         }
 

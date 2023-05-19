@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property mixed $url
  * @property mixed $client_id
  * @property mixed $secret_key
- * @method static where(string $string, string $string1, string $clientId)
  */
 class Integration extends Model
 {

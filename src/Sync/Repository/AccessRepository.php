@@ -85,7 +85,6 @@ class AccessRepository
      */
     public function saveApiKey(string $kommoId, string $apiKey): void
     {
-        // TODO: решение не до конца соответствует ТЗ
         $accountId = $this->getAccountIdByKommoId($kommoId);
         $access = Access::where('account_id', '=', $accountId)->first();
         $access->unisender_api_key = $apiKey;
@@ -93,17 +92,17 @@ class AccessRepository
     }
 
     /**
-     * Is access token existsn and don't expire
+     * Is access token exists and don't expire
      *
      * @param string $kommoId
      * @return bool
      */
-    public function isAccessTokenExists(string $kommoId): bool
+    public function isAccessTokenValid(string $kommoId): bool
     {
         $accountId = $this->getAccountIdByKommoId($kommoId);
         $token = json_decode(Account::find($accountId)->access->kommo_access_token);
-        $tokenExpires = $token['expires'] ?? null;
-        if ($tokenExpires > time() && isset($token['access_token'])) {
+        $tokenExpires = $token->expires ?? null;
+        if ($tokenExpires > time() && isset($token->access_token)) {
             return true;
         }
         return false;

@@ -8,12 +8,12 @@ use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Server\RequestHandlerInterface;
-use Sync\Handler\WidgetHandler;
+use Sync\Handler\WebhookHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\ContactRepository;
 use Sync\Repository\IntegrationRepository;
 
-class WidgetHandlerFactory
+class WebhookHandlerFactory
 {
     /**
      * @param ContainerInterface $container
@@ -22,7 +22,7 @@ class WidgetHandlerFactory
     public function __invoke(ContainerInterface $container): RequestHandlerInterface
     {
         try {
-            return new WidgetHandler(
+            return new WebhookHandler(
                 $container->get(AccessRepository::class),
                 $container->get(IntegrationRepository::class),
                 $container->get(ContactRepository::class)

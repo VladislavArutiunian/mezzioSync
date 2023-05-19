@@ -15,6 +15,9 @@ class TokenService
     /** @var AccessRepository */
     private AccessRepository $accessRepository;
 
+    /**
+     * @param AccessRepository $accessRepository
+     */
     public function __construct(AccessRepository $accessRepository)
     {
         $this->accessRepository = $accessRepository;
@@ -44,7 +47,7 @@ class TokenService
     }
 
     /**
-     * Получение токена из файла.
+    Save * Получение токена из файла.
      *
      * @param int $clientId
      * @return AccessToken
@@ -52,6 +55,7 @@ class TokenService
     public function readToken(int $clientId): AccessToken
     {
         $token = $this->accessRepository->getToken($clientId);
+
         return new AccessToken($token);
     }
 

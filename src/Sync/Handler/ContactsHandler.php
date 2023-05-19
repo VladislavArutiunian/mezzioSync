@@ -11,7 +11,7 @@ use Psr\Http\Message\ServerRequestInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
-use Sync\Service\ContactService;
+use Sync\Service\ApiContactService;
 use Sync\Service\KommoApiClient;
 
 class ContactsHandler implements RequestHandlerInterface
@@ -45,16 +45,24 @@ class ContactsHandler implements RequestHandlerInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $queryParams = $request->getQueryParams();
+        try {
+            $kommoId = $request->getQueryParams()['id'];
+            if (!isset($kommoId)) {
+                throw new Exception('provide your kommo account id');
+            }
 
-        $kommoApiClient = new KommoApiClient(
-            $this->accessRepository,
-            $this->integrationRepository
-        );
-        $contacts = $kommoApiClient->getContacts($queryParams);
+            $kommoApiClient = new KommoApiClient(
+                $this->accessRepository,
+                $this->integrationRepository
+            );
 
-        $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
+            $contacts = $kommoApiClient->getContacts($kommoId);
 
-        return new JsonResponse($normalizedContacts);
+            $normalizedContacts = (new ApiContactService())->getNormalizedContacts($contacts);
+
+            return new JsonResponse($normalizedContacts);
+        } catch (Exception $e) {
+            exit($e->getMessage());
+        }
     }
 }

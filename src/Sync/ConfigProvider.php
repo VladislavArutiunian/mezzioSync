@@ -11,6 +11,7 @@ use Sync\Factory\DbAccountsHandlerFactory;
 use Sync\Factory\SendHandlerFactory;
 use Sync\Factory\SetupHandlerFactory;
 use Sync\Factory\SumHandlerFactory;
+use Sync\Factory\WebhookHandlerFactory;
 use Sync\Factory\WidgetHandlerFactory;
 use Sync\Handler\AuthHandler;
 use Sync\Handler\ContactHandler;
@@ -19,6 +20,7 @@ use Sync\Handler\DbAccountsHandler;
 use Sync\Handler\SendHandler;
 use Sync\Handler\SetupHandler;
 use Sync\Handler\SumHandler;
+use Sync\Handler\WebhookHandler;
 use Sync\Handler\WidgetHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
@@ -69,6 +71,7 @@ class ConfigProvider
                 DbAccountsHandler::class => DbAccountsHandlerFactory::class,
                 SetupHandler::class => SetupHandlerFactory::class,
                 WidgetHandler::class => WidgetHandlerFactory::class,
+                WebhookHandler::class => WebhookHandlerFactory::class,
             ],
         ];
     }
