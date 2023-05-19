@@ -5,10 +5,7 @@ namespace Sync\Repository;
 use Sync\Model\Access;
 use Sync\Model\Account;
 
-/**
- * @property string $unisender_api_key
- */
-class AccessRepository
+class AccessRepository // TODO: PHPDocs
 {
     /**
      * Save Token to db table access

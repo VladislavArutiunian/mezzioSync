@@ -5,7 +5,7 @@ namespace Sync\Repository;
 use Sync\Model\Account;
 use Sync\Model\Integration;
 
-class IntegrationRepository
+class IntegrationRepository // TODO: PHPDocs
 {
     /**
      * Get integration by account_id

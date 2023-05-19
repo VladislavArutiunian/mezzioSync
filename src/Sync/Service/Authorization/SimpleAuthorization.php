@@ -8,7 +8,7 @@ use Sync\Repository\IntegrationRepository;
 use Sync\Service\TokenService;
 use Throwable;
 
-class SimpleAuthorization extends AbstractAuthorization
+class SimpleAuthorization extends AbstractAuthorization // TODO: PHPDocs
 {
     /**
      * SimpleAuthorization конструктор.

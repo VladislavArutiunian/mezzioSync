@@ -4,7 +4,7 @@ namespace Sync;
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
-class DatabaseManager
+class DatabaseManager // TODO: PHPDocs
 {
     /**
      * Returnes instance for container

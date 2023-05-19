@@ -9,7 +9,7 @@ use Sync\Repository\IntegrationRepository;
 use Sync\Service\TokenService;
 use Throwable;
 
-class StandardAuthorization extends AbstractAuthorization
+class StandardAuthorization extends AbstractAuthorization // TODO: PHPDocs
 {
     /**
      * StandardAuthorization конструктор.

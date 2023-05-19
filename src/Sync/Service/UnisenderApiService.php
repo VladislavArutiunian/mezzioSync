@@ -5,7 +5,7 @@ namespace Sync\Service;
 use Exception;
 use Unisender\ApiWrapper\UnisenderApi;
 
-class UnisenderApiService
+class UnisenderApiService // TODO: PHPDocs
 {
     /**
      * api key unisender
