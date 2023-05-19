@@ -10,6 +10,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Handler\WidgetHandler;
 use Sync\Repository\AccessRepository;
+use Sync\Repository\ContactRepository;
 use Sync\Repository\IntegrationRepository;
 
 class WidgetHandlerFactory
@@ -23,7 +24,8 @@ class WidgetHandlerFactory
         try {
             return new WidgetHandler(
                 $container->get(AccessRepository::class),
-                $container->get(IntegrationRepository::class)
+                $container->get(IntegrationRepository::class),
+                $container->get(ContactRepository::class)
             );
         } catch (ContainerExceptionInterface | NotFoundExceptionInterface $e) {
             exit($e->getMessage());

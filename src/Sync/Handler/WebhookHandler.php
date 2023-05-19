@@ -12,9 +12,9 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\ContactRepository;
 use Sync\Repository\IntegrationRepository;
-use Sync\Service\ContactService;
 use Sync\Service\KommoApiClient;
 use Sync\Service\UnisenderApiService;
+use Sync\Service\WebhookContactService;
 
 class WebhookHandler implements RequestHandlerInterface
 {
@@ -23,11 +23,15 @@ class WebhookHandler implements RequestHandlerInterface
 
     /** @var IntegrationRepository  */
     private IntegrationRepository $integrationRepository;
+
+    /** @var ContactRepository  */
     private ContactRepository $contactRepository;
 
+
     /**
-     * ContactsHandler констурктор
-     *
+     * @param AccessRepository $accessRepository
+     * @param IntegrationRepository $integrationRepository
+     * @param ContactRepository $contactRepository
      */
     public function __construct(
         AccessRepository $accessRepository,
@@ -40,71 +44,69 @@ class WebhookHandler implements RequestHandlerInterface
     }
 
     /**
-     * Save unisender apikey from widget
+     * Webhook, handles POST requests from kommo
+     * (Update, remove, add) contacts to db - unisender
      *
      * @param ServerRequestInterface $request
      * @return ResponseInterface
      */
     public function handle(ServerRequestInterface $request): ResponseInterface
     {
-        $body = $request->getParsedBody();
-//        $body = json_decode(file_get_contents('php://input'), true);
-        if (!isset($body['contacts'])) {
-            throw new Exception('contacts not provided');
-        }
-        $status = key($body['contacts']);
-        $contactId = $body['contacts'][$status][0]['id'];
-        $kommoId = $body['account']['id'];
-        $params['id'] = $body['account']['id'];
+        try {
+            $body = $request->getParsedBody();
 
-        $kommoApiClient = new KommoApiClient($this->accessRepository, $this->integrationRepository);
-        $apiKey = $this->accessRepository->getApiKey($kommoId);
+            if (!isset($body['contacts'])) {
+                throw new Exception('contacts not provided');
+            }
+            $status = key($body['contacts']);
+            $contactId = $body['contacts'][$status][0]['id'];
+            $kommoId = $body['account']['id'];
 
-        if ($status != 'delete') {
-            $contact = array_filter(
-                $kommoApiClient->getContacts($kommoId),
-                fn ($item) => $item['id'] == $contactId
-            );
-            $normalizedContacts = (new ContactService())->getNormalizedContacts($contact);
+            $kommoApiClient = new KommoApiClient($this->accessRepository, $this->integrationRepository);
+            $apiKey = $this->accessRepository->getApiKey($kommoId);
+            $unisenderService = new UnisenderApiService($apiKey);
 
             switch ($status) {
                 case 'add':
-                    $this->contactRepository->saveContacts($normalizedContacts, (int) $kommoId);
+                    $contact = (new WebhookContactService())
+                        ->validateAndNormalize($kommoApiClient->getContact($kommoId, $contactId));
 
-                    $unisenderService = new UnisenderApiService($apiKey);
-                    $unisenderResponseAdded = $unisenderService
-                        ->importContactsByLimit($normalizedContacts, $kommoId);
+                    $this->contactRepository->saveContacts($contact, (int) $kommoId);
+
+                    $unisenderService
+                        ->importContactsByLimit($contact, $kommoId);
                     break;
+
                 case 'update':
-                    $unisenderService = new UnisenderApiService($apiKey);
-                    $contactsEmails = $this->contactRepository->getContactsEmails((int) $contactId);
-                    $unisenderResponseDeleted = $unisenderService
+                    $contact = (new WebhookContactService())
+                        ->validateAndNormalize($kommoApiClient->getContact($kommoId, $contactId));
+
+                    $contactsEmails = $this->contactRepository->getContactEmails((int) $contactId);
+
+                    $unisenderService
                         ->importContactsByLimit($contactsEmails, $kommoId, true);
-                    $unisenderResponseAdded = $unisenderService
-                        ->importContactsByLimit($normalizedContacts, $kommoId);
-                    $this->contactRepository->saveContacts($normalizedContacts, (int) $kommoId);
-                        break;
+
+                    $unisenderService
+                        ->importContactsByLimit($contact, $kommoId);
+                    $this->contactRepository->saveContacts($contact, (int) $kommoId);
+                    break;
+
+                case 'delete':
+                    $contactsEmails = $this->contactRepository->getContactEmails((int) $contactId);
+                    $unisenderService
+                        ->importContactsByLimit($contactsEmails, $kommoId, true);
+                    $this->contactRepository->deleteContact((int) $contactId);
+                    break;
             }
-        } else {
-            $unisenderService = new UnisenderApiService($apiKey);
-            $contactsEmails = $this->contactRepository->getContactsEmails((int) $contactId);
-            $unisenderResponseDeleted = $unisenderService
-                ->importContactsByLimit($contactsEmails, $kommoId, true);
-            $this->contactRepository->deleteContact((int) $contactId);
+        } catch (Exception $e) {
+            $message = $e->getMessage();
         }
 
         return new JsonResponse([
-            'status' => 'success'
+            'status' => 'success',
+            'data' => [
+                'message' => $message ?? 'contacts synchronized'
+            ]
         ]);
     }
 }
-//            file_put_contents('request_delete_many.json', json_encode($body), FILE_APPEND);
-
-//                    $exported_data = var_export($body, true);
-//        file_put_contents('array_add.php', "<?php\n\n\$data = " . $exported_data . ";\n");
-
-//$exported_data = var_export($normalizedContacts, true);
-//file_put_contents('test_11.php', "<?php\n\n\$data = " . $exported_data . ";\n");
-//        $exported_data = var_export($body, true);
-//file_put_contents('test_12.php', "<?php\n\n\$data = " . $exported_data . ";\n");
-//file_put_contents('test14.txt', json_encode($data));

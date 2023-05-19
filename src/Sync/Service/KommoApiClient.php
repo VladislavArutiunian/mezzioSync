@@ -11,7 +11,6 @@ use AmoCRM\Filters\ContactsFilter;
 use AmoCRM\Models\WebhookModel;
 use AmoCRM\OAuth2\Client\Provider\AmoCRMException;
 use Exception;
-use Sync\Model\Integration;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\IntegrationRepository;
 
@@ -77,7 +76,7 @@ class KommoApiClient
     /**
      * Получить список контактов
      *
-     * @param array $queryParams
+     * @param string $kommoId
      * @return array
      */
     public function getContacts(string $kommoId): array
@@ -129,6 +128,48 @@ class KommoApiClient
                 }
             }
             return $result;
+        } catch (Exception | AmoCRMApiException $e) {
+            exit($e->getMessage());
+        }
+    }
+
+    /**
+     * Gets Contact from kommo
+     *
+     * @param string $kommoId
+     * @param string $contactId
+     * @return array
+     */
+    public function getContact(string $kommoId, string $contactId): array
+    {
+        try {
+            if (!isset($kommoId)) {
+                throw new Exception('provide an account id');
+            }
+
+            $integration = $this->integrationRepository->getIntegration($kommoId);
+            $this->amoCRMApiClient = new AmoCRMApiClient(
+                $integration->client_id,
+                $integration->secret_key,
+                $integration->url
+            );
+
+            if (!$this->tokenService->isTokenExists($kommoId)) {
+                header('Location: ' . "/auth?id=$kommoId");
+            }
+
+            $accessToken = $this->tokenService->readToken($kommoId);
+            return $this
+                ->amoCRMApiClient
+                ->setAccountBaseDomain($accessToken->jsonSerialize()['base_domain'])
+                ->setAccessToken($accessToken)
+                ->contacts()
+                ->getOne($contactId)
+                ->toArray();
+        } catch (AmoCRMMissedTokenException | AmoCRMoAuthApiException $e) {
+            $this->tokenService->deleteToken($kommoId);
+            header('Location: ' . "/auth?id=$kommoId");
+            exit($e->getMessage());
         } catch (Exception | AmoCRMApiException $e) {
             exit($e->getMessage());
         }

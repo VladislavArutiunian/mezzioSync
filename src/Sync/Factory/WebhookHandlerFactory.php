@@ -9,7 +9,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Handler\WebhookHandler;
-use Sync\Handler\WidgetHandler;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\ContactRepository;
 use Sync\Repository\IntegrationRepository;

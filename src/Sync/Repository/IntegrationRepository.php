@@ -2,7 +2,6 @@
 
 namespace Sync\Repository;
 
-use Exception;
 use Sync\Model\Account;
 use Sync\Model\Integration;
 
@@ -58,6 +57,10 @@ class IntegrationRepository
         return $integration->account->kommo_id;
     }
 
+    /**
+     * @param string $accountId
+     * @return string
+     */
     public function getUrl(string $accountId): string
     {
         return Account::where('kommo_id', $accountId)->first()->integration->url;

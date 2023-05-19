@@ -12,7 +12,7 @@ use Psr\Http\Server\RequestHandlerInterface;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\ContactRepository;
 use Sync\Repository\IntegrationRepository;
-use Sync\Service\ContactService;
+use Sync\Service\ApiContactService;
 use Sync\Service\KommoApiClient;
 use Sync\Service\UnisenderApiService;
 
@@ -72,10 +72,9 @@ class SendHandler implements RequestHandlerInterface
             $accountId = $this->integrationRepository->getAccountIdByKommoId($kommoId);
 
             $kommoApiService = new KommoApiClient($this->accessRepository, $this->integrationRepository);
-            $contacts = $kommoApiService->getContacts($queryParams);
-            $normalizedContacts = (new ContactService())->getNormalizedContacts($contacts);
+            $contacts = $kommoApiService->getContacts($kommoId);
 
-
+            $normalizedContacts = (new ApiContactService())->getNormalizedContacts($contacts);
             $this->contactRepository->saveContacts($normalizedContacts, $accountId);
 
             $apiKey = $this->accessRepository->getApiKey($kommoId);

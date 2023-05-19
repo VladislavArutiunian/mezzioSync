@@ -26,6 +26,7 @@ class UnisenderApiService
      *
      * @param string $accountId
      * @param array $contacts
+     * @param bool $delete
      * @return array
      */
     public function prepareForRequest(string $accountId, array $contacts, bool $delete = false): array
@@ -114,6 +115,7 @@ class UnisenderApiService
      *
      * @param array $contacts
      * @param string $accountId
+     * @param bool $delete
      * @return array
      */
     public function importContactsByLimit(array $contacts, string $accountId, bool $delete = false): array

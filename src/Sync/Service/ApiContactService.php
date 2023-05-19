@@ -3,7 +3,7 @@
 namespace Sync\Service;
 
 /** Works with contacts, validate it to synchronization */
-class ContactService
+class ApiContactService
 {
     /**
      * Filter only email fields
@@ -82,7 +82,7 @@ class ContactService
 
     /**
      * Get contact's emails
-     *
+     *Save
      * @param array $contact
      * @return array
      */
