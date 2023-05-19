@@ -5,7 +5,12 @@ namespace Sync\Service;
 use Exception;
 use Unisender\ApiWrapper\UnisenderApi;
 
-class UnisenderApiService // TODO: PHPDocs
+/**
+ * Класс UnisenderApiService
+ *
+ * Осуществялет API запросы к Unisender
+ */
+class UnisenderApiService
 {
     /**
      * api key unisender

@@ -5,7 +5,12 @@ namespace Sync\Repository;
 use Sync\Model\Access;
 use Sync\Model\Account;
 
-class AccessRepository // TODO: PHPDocs
+/**
+ * Класс AccessRepository
+ *
+ * Репозитоий для работы с доступами
+ */
+class AccessRepository
 {
     /**
      * Save Token to db table access

@@ -46,8 +46,8 @@ class TokenService
         $this->accessRepository->deleteToken($clientId);
     }
 
-    /**  TODO
-    Save * Получение токена из файла.
+    /**
+     * Получение токена из бд таблицы accesses
      *
      * @param int $clientId
      * @return AccessToken

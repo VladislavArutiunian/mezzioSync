@@ -6,10 +6,14 @@ use Exception;
 use Sync\Model\Account;
 use Sync\Repository\AccessRepository;
 use Sync\Repository\AccountRepository;
-use Sync\Repository\IntegrationRepository; // TODO: лишняя строка
+use Sync\Repository\IntegrationRepository;
 
-
-class AccountService // TODO: PHPDocs
+/**
+ * Класс AccountService
+ *
+ * Работает с аккаунтом и связанными сущностями
+ */
+class AccountService
 {
     /**
      * @var AccountRepository

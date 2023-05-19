@@ -2,11 +2,16 @@
 
 namespace Sync\Service;
 
-/** Works with contacts, validate it to synchronization */
+/**
+ * Class WebhookContactService
+ *
+ * Works with contacts, validate it to synchronization
+ */
 class WebhookContactService
 {
     /**
-     * TODO: описание?
+     * Нормализует переданный контакт по необходимым условиям
+     *
      * @param array $contact
      * @return array|array[]
      */
@@ -43,7 +48,8 @@ class WebhookContactService
    }
 
     /**
-     * TODO: описание?
+     * Иммет ли контакт поле с типом work email
+     *
      * @param array $emailFields
      * @return bool
      */

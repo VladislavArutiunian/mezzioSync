@@ -96,10 +96,11 @@ class ApiContactService
     }
 
     /**
+     * Функция фильтурет и нормализует переданные ей конакты
      * @param array $contacts
      * @return array
      */
-    public function getNormalizedContacts(array $contacts): array // TODO: PHPDocs
+    public function getNormalizedContacts(array $contacts): array
     {
         $filtered = $this->filterContacts($this->filterFields($contacts));
         return $this->formatContacts($filtered);
