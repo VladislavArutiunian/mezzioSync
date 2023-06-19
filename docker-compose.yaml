@@ -49,6 +49,14 @@ services:
       - applicationMysqlData:/var/lib/mysql
       - applicationMysqlFiles:/var/lib/mysql-files
 
+    # Queue Service
+  application-beanstalkd:
+    image: schickling/beanstalkd:latest
+    container_name: application-beanstalkd
+    ports:
+      - "11300:11300"
+
+
 #Docker Volumes
 volumes:
   applicationMysqlData:
