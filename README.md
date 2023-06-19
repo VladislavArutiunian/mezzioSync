@@ -1,5 +1,5 @@
-Sync 
-
+# KommoUnisender contacts sync app
+### Based on: Laminas Mezzio Framework
 Run docker:
 ```
 docker compose up
