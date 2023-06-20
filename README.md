@@ -5,8 +5,7 @@
  - MySQL,
  - Eloquent ORM,
  - phpmig,
- - beanstalkd,
- - cronitor,
+ - beanstalkd, cronitor (in dev),
  - docker,
  - ngrok/localtunnel
 
@@ -21,8 +20,6 @@ On every action (creating, updating, deleting) with contacts, it will be (create
 
 This app supports multi users usage, just follow steps below to add any amount users you want to the sync process
 
-And also uses beanstalkd for
-О проекте что делает, кратко о функционале
 
 ## Usage:
 #### Initial steps:
